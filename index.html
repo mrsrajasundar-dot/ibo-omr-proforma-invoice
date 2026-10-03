@@ -72,9 +72,9 @@
             border-color: #b71c1c;
         }
 
-        /* Compact Store Address box */
+        /* Compact Store Address Box */
         #inpStoreAddr {
-            height: 48px;
+            height: 46px;
             resize: vertical;
             font-size: 7.8pt;
             line-height: 1.3;
@@ -172,7 +172,7 @@
             padding-bottom: 2px;
         }
 
-        /* Invoice Sheet (Looks exactly like the original red template) */
+        /* Invoice Sheet */
         .invoice-sheet {
             background: #ffffff;
             padding: 20px 25px;
@@ -382,7 +382,7 @@
             padding-top: 6px;
         }
 
-        /* STRICT PRINT STYLING TO KEEP RED THEME ACCURATE IN PDF */
+        /* STRICT PRINT STYLING - RED THEME PRESERVATION */
         @media print {
             * {
                 -webkit-print-color-adjust: exact !important;
@@ -403,21 +403,36 @@
                 border: none !important;
             }
             .header-tbl {
+                background-color: #b71c1c !important;
                 background: #b71c1c !important;
             }
             .header-tbl td {
+                background-color: #b71c1c !important;
                 background: #b71c1c !important;
+                color: #ffffff !important;
             }
             .inv-badge {
+                background-color: #6d0000 !important;
                 background: #6d0000 !important;
+                color: #ffffff !important;
             }
             .items-tbl th {
+                background-color: #b71c1c !important;
                 background: #b71c1c !important;
                 color: #ffffff !important;
             }
             .tot-grand {
+                background-color: #b71c1c !important;
                 background: #b71c1c !important;
                 color: #ffffff !important;
+            }
+            .tot-sub {
+                background-color: #fff5f5 !important;
+                background: #fff5f5 !important;
+            }
+            .items-tbl tr:nth-child(even) {
+                background-color: #fff9f9 !important;
+                background: #fff9f9 !important;
             }
             @page {
                 size: A4 portrait;
@@ -438,7 +453,7 @@
         <div class="upload-section">
             <div class="upload-info">
                 <h4>Excel Data Upload</h4>
-                <p>மாதிரி Excel ஃபைலை டவுன்லோட் செய்து, அதில் பொருட்களை உள்ளிட்ட பின் அப்லோட் செய்யவும்.</p>
+                <p>Download the template with headlines, enter items, and upload here.</p>
             </div>
             <div class="btn-group">
                 <button class="btn btn-template" onclick="downloadSampleExcel()">📥 Download Sample Excel</button>
@@ -446,7 +461,7 @@
                     📂 Upload Excel File
                     <input type="file" id="excelInput" accept=".xlsx, .xls, .csv" onchange="importExcel(event)">
                 </div>
-                <button class="btn btn-print" onclick="window.print()">🖨️ Download / Print PDF</button>
+                <button class="btn btn-print" onclick="window.print()">🖨️️ Download / Print PDF</button>
             </div>
         </div>
 
@@ -474,11 +489,11 @@ Email: support@ibo.com | Web: www.ibo.com</textarea>
         </div>
 
         <!-- 2. Invoice & Customer Information -->
-        <div class="section-sub">2. Invoice & Customer Information (தேவைப்பட்டால் உள்ளிடவும்)</div>
+        <div class="section-sub">2. Invoice & Customer Information</div>
         <div class="grid-row">
             <div class="input-group">
                 <label>Invoice Number</label>
-                <input type="text" id="inpInvNo" placeholder="Invoice No உள்ளிடவும்" oninput="refreshInvoice()">
+                <input type="text" id="inpInvNo" placeholder="Enter Invoice Number" oninput="refreshInvoice()">
             </div>
             <div class="input-group">
                 <label>Invoice Date</label>
@@ -490,40 +505,40 @@ Email: support@ibo.com | Web: www.ibo.com</textarea>
             </div>
             <div class="input-group">
                 <label>Customer GSTIN</label>
-                <input type="text" id="inpGST" placeholder="GSTIN (இருந்தால் மட்டும்)" oninput="refreshInvoice()">
+                <input type="text" id="inpGST" placeholder="Enter GSTIN (Optional)" oninput="refreshInvoice()">
             </div>
         </div>
 
         <div class="grid-row">
             <div class="input-group">
                 <label>Customer / Company Name</label>
-                <input type="text" id="inpBuyerName" placeholder="வாடிக்கையாளர் பெயர் உள்ளிடவும்" oninput="refreshInvoice()">
+                <input type="text" id="inpBuyerName" placeholder="Enter Customer / Company Name" oninput="refreshInvoice()">
             </div>
             <div class="input-group" style="grid-column: span 3;">
                 <label>Customer Address</label>
-                <input type="text" id="inpBuyerAddr" placeholder="வாடிக்கையாளர் முகவரி உள்ளிடவும்" oninput="refreshInvoice()">
+                <input type="text" id="inpBuyerAddr" placeholder="Enter Customer Delivery Address" oninput="refreshInvoice()">
             </div>
         </div>
 
         <!-- 3. Discount Setup -->
-        <div class="section-sub">3. Discount Details (Subtotal-க்கு கீழே தோன்றும்)</div>
+        <div class="section-sub">3. Discount Details (Shown Below Subtotal)</div>
         <div class="grid-row">
             <div class="input-group">
                 <label>Discount Type</label>
                 <select id="inpDiscType" onchange="renderInvoice()">
-                    <option value="none">No Discount (தள்ளுபடி இல்லை)</option>
+                    <option value="none">No Discount</option>
                     <option value="percent">Percentage (%)</option>
                     <option value="amount">Direct Amount (₹)</option>
                 </select>
             </div>
             <div class="input-group">
                 <label>Discount Value</label>
-                <input type="number" id="inpDiscVal" placeholder="சதவீதம் அல்லது ரூபாய் தொகையை உள்ளிடவும்" step="any" oninput="renderInvoice()">
+                <input type="number" id="inpDiscVal" placeholder="Enter percentage or amount" step="any" oninput="renderInvoice()">
             </div>
         </div>
 
         <!-- 4. Bank Account Details -->
-        <div class="section-sub">4. Bank Account Details (உள்ளிடப்பட்டால் மட்டுமே PDF-ல் தோன்றும்)</div>
+        <div class="section-sub">4. Bank Account Details (Appears in PDF Only If Entered)</div>
         <div class="grid-row">
             <div class="input-group">
                 <label>Company / Account Name</label>
@@ -595,4 +610,268 @@ Email: support@ibo.com | Web: www.ibo.com</div>
         <table class="items-tbl">
             <thead>
                 <tr>
-                    <th
+                    <th class="text-center" style="width: 4%;">#</th>
+                    <th class="text-center" style="width: 15%;">Offer ID</th>
+                    <th style="width: 48%;">Description of Goods</th>
+                    <th class="text-center" style="width: 7%;">Qty</th>
+                    <th class="text-right" style="width: 13%;">Price (₹)</th>
+                    <th class="text-right" style="width: 13%;">Total (₹)</th>
+                    <th class="text-center no-print" style="width: 4%;">Act</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+
+        <!-- Summary & Dynamic Bank Section -->
+        <table class="sum-tbl">
+            <tr>
+                <td class="bank-card" id="bankBox" style="display: none;">
+                    <div class="bank-card-title">BANK ACCOUNT DETAILS FOR PAYMENT</div>
+                    <div class="bank-item"><strong>Account Name:</strong> <span id="lblBankAccName">-</span></div>
+                    <div class="bank-item"><strong>Bank Name:</strong> <span id="lblBankName">-</span></div>
+                    <div class="bank-item"><strong>Account Number:</strong> <span id="lblBankAccNo">-</span></div>
+                    <div class="bank-item"><strong>IFSC Code:</strong> <span id="lblBankIFSC">-</span></div>
+                </td>
+                <td id="bankSpacer" style="width: 4%; display: none;"></td>
+                <td style="vertical-align: top;" id="totalsContainer">
+                    <table class="totals-tbl" id="totalsBody"></table>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Terms -->
+        <div class="terms-card">
+            <div class="terms-title">TERMS & CONDITIONS</div>
+            <ol style="padding-left: 14px; line-height: 1.35;">
+                <li>This is a Proforma Invoice only, not a commercial tax invoice.</li>
+                <li>Prices mentioned are inclusive of all applicable taxes unless listed otherwise.</li>
+                <li>Goods will be dispatched only after full reflection of payment.</li>
+                <li>Validity of this proforma invoice is 3 days from date of issue.</li>
+            </ol>
+        </div>
+
+        <div class="footer-line">
+            EBO Mart Pvt Ltd | Proforma Invoice
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    let itemsList = [];
+
+    window.onload = function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById("inpDate").value = today;
+        refreshInvoice();
+        renderInvoice();
+
+        // Bind store selector change
+        document.getElementById("storeSelect").addEventListener("change", onStoreChange);
+    };
+
+    function onStoreChange() {
+        const sel = document.getElementById("storeSelect").value;
+        const nameInput = document.getElementById("inpStoreName");
+        const addrInput = document.getElementById("inpStoreAddr");
+
+        if (sel === "saravanampatti") {
+            nameInput.value = "IBO - Saravanampatti, Coimbatore";
+            addrInput.value = "No. 46/6A1A NH 948, opp. Bus Stop, Saravanampatti,\nCoimbatore, Tamil Nadu - 641035\nEmail: support@ibo.com | Web: www.ibo.com";
+        } else if (sel === "omr") {
+            nameInput.value = "IBO - OMR Padur";
+            addrInput.value = "458/3, Rajiv Gandhi Salai, Next to Hindusthan College,\nPadur, Chennai, Tamil Nadu - 603103\nEmail: support@ibo.com | Web: www.ibo.com";
+        }
+        
+        document.getElementById("lblStoreName").innerText = nameInput.value;
+        document.getElementById("lblStoreAddr").innerText = addrInput.value;
+    }
+
+    // Direct, Reliable Sample Excel / CSV Downloader
+    function downloadSampleExcel() {
+        const csvContent = "\uFEFFOffer ID,Description,Qty,Price\r\n";
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.download = "Proforma_Invoice_Template.csv";
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(function() {
+            URL.revokeObjectURL(url);
+            document.body.removeChild(link);
+        }, 600);
+    }
+
+    // Excel / CSV File Import
+    function importExcel(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            const data = new Uint8Array(evt.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const jsonData = XLSX.utils.sheet_to_json(sheet);
+
+            if (!jsonData || jsonData.length === 0) {
+                alert("The uploaded file contains no data rows!");
+                return;
+            }
+
+            itemsList = jsonData.map(row => {
+                return {
+                    offerId: row['Offer ID'] || row['OFFER ID'] || row['offer_id'] || '',
+                    desc: row['Description'] || row['DESCRIPTION'] || row['Description of Goods'] || '',
+                    qty: Number(row['Qty'] || row['QTY'] || row['Quantity'] || 1),
+                    price: Number(row['Price'] || row['PRICE'] || row['Unit Price'] || 0)
+                };
+            }).filter(item => item.offerId || item.desc);
+
+            renderInvoice();
+            alert("File successfully imported! (" + itemsList.length + " items loaded)");
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    // Render Table and Subtotal Discount
+    function renderInvoice() {
+        const tbody = document.getElementById("tableBody");
+        const totalsBody = document.getElementById("totalsBody");
+
+        tbody.innerHTML = "";
+        let totQty = 0;
+        let totGross = 0;
+
+        itemsList.forEach((item, idx) => {
+            const lineTotal = item.qty * item.price;
+            totQty += item.qty;
+            totGross += lineTotal;
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td class="text-center font-bold">${idx + 1}</td>
+                <td class="text-center font-mono">${item.offerId}</td>
+                <td>${item.desc}</td>
+                <td class="text-center font-bold">${item.qty}</td>
+                <td class="text-right">₹${item.price.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                <td class="text-right font-bold">₹${lineTotal.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                <td class="text-center no-print">
+                    <button class="btn-danger" onclick="removeItem(${idx})">✕</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        // Discount Calculation
+        const discType = document.getElementById("inpDiscType").value;
+        const discVal = parseFloat(document.getElementById("inpDiscVal").value) || 0;
+        let discAmount = 0;
+        let discLabel = "";
+
+        if (discVal > 0 && discType !== "none") {
+            if (discType === "percent") {
+                discAmount = (totGross * discVal) / 100;
+                discLabel = `Discount (${discVal}%):`;
+            } else if (discType === "amount") {
+                discAmount = discVal;
+                discLabel = "Discount Savings:";
+            }
+        }
+
+        const grandTotal = Math.max(0, totGross - discAmount);
+
+        let totalsHTML = `
+            <tr class="tot-sub">
+                <td><strong>Total Quantity:</strong></td>
+                <td class="text-right font-bold">${totQty.toLocaleString('en-IN')} Units</td>
+            </tr>
+            <tr class="tot-sub">
+                <td><strong>Subtotal:</strong></td>
+                <td class="text-right font-bold">₹${totGross.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+            </tr>
+        `;
+
+        if (discAmount > 0) {
+            totalsHTML += `
+                <tr class="tot-sub" style="color: #b71c1c;">
+                    <td><strong>${discLabel}</strong></td>
+                    <td class="text-right font-bold">-₹${discAmount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                </tr>
+            `;
+        }
+
+        totalsHTML += `
+            <tr class="tot-grand">
+                <td>GRAND TOTAL:</td>
+                <td class="text-right">₹${grandTotal.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+            </tr>
+        `;
+
+        totalsBody.innerHTML = totalsHTML;
+    }
+
+    function removeItem(index) {
+        itemsList.splice(index, 1);
+        renderInvoice();
+    }
+
+    function refreshInvoice() {
+        document.getElementById("lblStoreName").innerText = document.getElementById("inpStoreName").value;
+        document.getElementById("lblStoreAddr").innerText = document.getElementById("inpStoreAddr").value;
+        
+        document.getElementById("lblInvNo").innerText = document.getElementById("inpInvNo").value.trim() || "-";
+        
+        const rawDate = document.getElementById("inpDate").value;
+        if (rawDate) {
+            const d = new Date(rawDate);
+            const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+            document.getElementById("lblDate").innerText = `${months[d.getMonth()]} ${String(d.getDate()).padStart(2, '0')}, ${d.getFullYear()}`;
+        } else {
+            document.getElementById("lblDate").innerText = "-";
+        }
+
+        document.getElementById("lblValidity").innerText = document.getElementById("inpValidity").value || "3 Days";
+
+        const buyer = document.getElementById("inpBuyerName").value.trim();
+        document.getElementById("lblBuyerName").innerText = buyer || "-";
+        document.getElementById("lblShipName").innerText = buyer || "-";
+
+        document.getElementById("lblBuyerAddr").innerText = document.getElementById("inpBuyerAddr").value.trim() || "-";
+        
+        const gst = document.getElementById("inpGST").value.trim();
+        document.getElementById("lblGST").innerText = gst || "-";
+        document.getElementById("gstContainer").style.display = gst ? "block" : "none";
+
+        // Bank Details Toggle
+        const bAccName = document.getElementById("inpBankAccName").value.trim();
+        const bName = document.getElementById("inpBankName").value.trim();
+        const bAccNo = document.getElementById("inpBankAccNo").value.trim();
+        const bIFSC = document.getElementById("inpBankIFSC").value.trim();
+
+        const bankBox = document.getElementById("bankBox");
+        const bankSpacer = document.getElementById("bankSpacer");
+        const totalsContainer = document.getElementById("totalsContainer");
+
+        if (bAccName || bName || bAccNo || bIFSC) {
+            bankBox.style.display = "table-cell";
+            bankSpacer.style.display = "table-cell";
+            totalsContainer.style.width = "44%";
+            
+            document.getElementById("lblBankAccName").innerText = bAccName || "-";
+            document.getElementById("lblBankName").innerText = bName || "-";
+            document.getElementById("lblBankAccNo").innerText = bAccNo || "-";
+            document.getElementById("lblBankIFSC").innerText = bIFSC || "-";
+        } else {
+            bankBox.style.display = "none";
+            bankSpacer.style.display = "none";
+            totalsContainer.style.width = "48%";
+            totalsContainer.style.marginLeft = "auto";
+        }
+    }
+</script>
+
+</body>
+</html>
