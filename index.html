@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proforma Invoice - Excel Upload & Auto PDF</title>
-    <!-- SheetJS library for reading and downloading Excel files -->
+    <title>Proforma Invoice Generator</title>
+    <!-- SheetJS library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
@@ -22,13 +22,15 @@
         }
         .panel-title { color: #b71c1c; font-size: 15pt; font-weight: 800; border-bottom: 2px solid #b71c1c; padding-bottom: 6px; margin-bottom: 15px; }
 
-        .grid-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 15px; }
+        .grid-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px; }
         .input-group { display: flex; flex-direction: column; }
-        .input-group label { font-size: 8pt; font-weight: 700; color: #555; margin-bottom: 4px; text-transform: uppercase; }
-        .input-group input { padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 8.5pt; outline: none; }
-        .input-group input:focus { border-color: #b71c1c; }
+        .input-group label { font-size: 7.8pt; font-weight: 700; color: #555; margin-bottom: 4px; text-transform: uppercase; }
+        .input-group input, .input-group select, .input-group textarea {
+            padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 8.5pt; outline: none; transition: 0.2s;
+        }
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus { border-color: #b71c1c; }
 
-        /* Excel Upload Box */
+        /* Excel Upload Section */
         .upload-section {
             background: #fff8f8;
             border: 2px dashed #ef9a9a;
@@ -60,7 +62,9 @@
         .btn-print:hover { background: #8e0000; }
         .btn-danger { background: #c62828; color: white; padding: 3px 7px; font-size: 7.5pt; border-radius: 3px; }
 
-        /* Invoice Preview Area */
+        .section-sub { font-size: 9pt; font-weight: 700; color: #b71c1c; margin: 10px 0 6px; text-transform: uppercase; border-bottom: 1px dashed #ef9a9a; padding-bottom: 3px; }
+
+        /* Invoice Sheet */
         .invoice-sheet {
             background: #ffffff;
             padding: 25px;
@@ -68,7 +72,6 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
 
-        /* Red Theme Invoice */
         .header-tbl {
             width: 100%; border-collapse: collapse;
             background: linear-gradient(135deg, #b71c1c 0%, #8e0000 100%);
@@ -77,7 +80,7 @@
         .header-tbl td { padding: 12px 14px; vertical-align: top; }
         .brand-name { font-size: 19pt; font-weight: 800; letter-spacing: 1px; }
         .brand-sub { font-size: 9.5pt; font-weight: 700; color: #ffcdd2; margin: 2px 0 3px; }
-        .store-addr { font-size: 7.8pt; color: #ffebee; line-height: 1.35; }
+        .store-addr { font-size: 7.8pt; color: #ffebee; line-height: 1.35; white-space: pre-line; }
         
         .inv-badge {
             background: #6d0000; font-size: 13pt; font-weight: 800; text-transform: uppercase;
@@ -96,7 +99,6 @@
         .addr-title { font-size: 8pt; font-weight: 800; color: #b71c1c; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid #eee; padding-bottom: 2px; }
         .company-name { font-size: 8.6pt; font-weight: 700; color: #111; margin-bottom: 2px; }
 
-        /* Items Table */
         .items-tbl { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
         .items-tbl th {
             background: #b71c1c; color: white; font-size: 7.6pt; font-weight: 700;
@@ -110,12 +112,16 @@
         .font-bold { font-weight: 700; }
         .discount-highlight { color: #b71c1c; font-weight: 700; }
 
-        /* Summary */
+        /* Summary & Bank Section */
         .sum-tbl { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-        .note-card {
-            width: 50%; border: 1px solid #ffcdd2; background: #fff5f5; border-left: 4px solid #b71c1c;
-            border-radius: 3px; padding: 8px 10px; font-size: 7.5pt; vertical-align: middle;
+        .bank-card {
+            width: 52%; border: 1px solid #ffcdd2; background: #fff5f5; border-left: 4px solid #b71c1c;
+            border-radius: 3px; padding: 8px 10px; font-size: 7.8pt; vertical-align: top;
         }
+        .bank-card-title { font-size: 8pt; font-weight: 800; color: #b71c1c; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid #ffe0e0; padding-bottom: 2px; }
+        .bank-item { margin-bottom: 2px; }
+        .bank-item strong { color: #444; }
+
         .totals-tbl { width: 100%; border-collapse: collapse; border: 1px solid #d32f2f; border-radius: 3px; font-size: 8pt; }
         .totals-tbl td { padding: 5px 8px; }
         .tot-sub { background: #fff5f5; border-bottom: 1px solid #ffe0e0; }
@@ -129,7 +135,7 @@
 
         .footer-line { margin-top: 12px; text-align: center; font-size: 7.5pt; color: #777; border-top: 1px solid #eee; padding-top: 6px; }
 
-        /* Print Settings for Pure Vector PDF */
+        /* Print Settings for PDF Download */
         @media print {
             body { background: white; padding: 0; }
             .control-panel { display: none !important; }
@@ -145,13 +151,13 @@
 
     <!-- CONTROLS & EXCEL UPLOADER -->
     <div class="control-panel">
-        <div class="panel-title">Proforma Invoice Generator (Excel Integration)</div>
+        <div class="panel-title">Proforma Invoice Generator</div>
 
         <!-- Excel Upload Bar -->
         <div class="upload-section">
             <div class="upload-info">
                 <h4>Excel Data Upload</h4>
-                <p>Excel கோப்பை (.xlsx, .xls, .csv) தேர்ந்தெடுத்து அப்லோட் செய்யவும்.</p>
+                <p>மாதிரி Excel ஃபைலை டவுன்லோட் செய்து, அதில் விவரங்களை உள்ளிட்ட பின் அப்லோட் செய்யவும்.</p>
             </div>
             <div class="btn-group">
                 <button class="btn btn-template" onclick="downloadSampleExcel()">📥 Download Sample Excel</button>
@@ -163,47 +169,81 @@
             </div>
         </div>
 
-        <!-- Invoice Details Inputs -->
+        <div class="section-sub">1. Store Details</div>
         <div class="grid-row">
             <div class="input-group">
-                <label>Invoice No</label>
-                <input type="text" id="inpInvNo" value="ibo / 02" oninput="refreshInvoice()">
+                <label>Store Location</label>
+                <select id="storeSelect" onchange="onStoreChange()">
+                    <option value="omr" selected>IBO - OMR Padur</option>
+                    <option value="saravanampatti">IBO - Saravanampatti, Coimbatore</option>
+                    <option value="custom">Custom Store</option>
+                </select>
             </div>
             <div class="input-group">
-                <label>Date</label>
-                <input type="text" id="inpDate" value="OCT 03, 2026" oninput="refreshInvoice()">
+                <label>Store Title</label>
+                <input type="text" id="inpStoreName" value="IBO - OMR Padur" oninput="refreshInvoice()">
+            </div>
+            <div class="input-group" style="grid-column: span 2;">
+                <label>Store Address & Contact (Editable)</label>
+                <textarea id="inpStoreAddr" rows="2" oninput="refreshInvoice()">458/3, Rajiv Gandhi Salai, Next to Hindusthan College,
+Padur, Chennai, Tamil Nadu - 603103
+Email: support@ibo.com | Web: www.ibo.com</textarea>
+            </div>
+        </div>
+
+        <div class="section-sub">2. Invoice & Customer Information</div>
+        <div class="grid-row">
+            <div class="input-group">
+                <label>Invoice Number</label>
+                <input type="text" id="inpInvNo" placeholder="Enter Invoice No" oninput="refreshInvoice()">
+            </div>
+            <div class="input-group">
+                <label>Invoice Date</label>
+                <input type="date" id="inpDate" oninput="refreshInvoice()">
             </div>
             <div class="input-group">
                 <label>Validity</label>
                 <input type="text" id="inpValidity" value="3 Days" oninput="refreshInvoice()">
             </div>
             <div class="input-group">
-                <label>Store Location</label>
-                <input type="text" id="inpStoreName" value="IBO - OMR Padur" oninput="refreshInvoice()">
+                <label>Customer GSTIN</label>
+                <input type="text" id="inpGST" placeholder="Enter GSTIN (Optional)" oninput="refreshInvoice()">
             </div>
         </div>
 
         <div class="grid-row">
             <div class="input-group">
-                <label>Customer Name</label>
-                <input type="text" id="inpBuyerName" value="ARTHY INFRASTRUCTURE PRIVATE LIMITED" oninput="refreshInvoice()">
+                <label>Customer / Company Name</label>
+                <input type="text" id="inpBuyerName" placeholder="Enter Customer / Company Name" oninput="refreshInvoice()">
+            </div>
+            <div class="input-group" style="grid-column: span 3;">
+                <label>Customer Address</label>
+                <input type="text" id="inpBuyerAddr" placeholder="Enter Delivery Address" oninput="refreshInvoice()">
+            </div>
+        </div>
+
+        <div class="section-sub">3. Bank Account Details (உள்ளிடப்பட்டால் மட்டுமே PDF-ல் தோன்றும்)</div>
+        <div class="grid-row">
+            <div class="input-group">
+                <label>Company / Account Name</label>
+                <input type="text" id="inpBankAccName" placeholder="e.g. IBO Commercial India Pvt Ltd" oninput="refreshInvoice()">
             </div>
             <div class="input-group">
-                <label>Address</label>
-                <input type="text" id="inpBuyerAddr" value="SF No.117/2, Sriram Avenue, Vadavalli, Coimbatore - 641041" oninput="refreshInvoice()">
+                <label>Bank Name</label>
+                <input type="text" id="inpBankName" placeholder="e.g. HDFC Bank Ltd" oninput="refreshInvoice()">
             </div>
             <div class="input-group">
-                <label>GSTIN</label>
-                <input type="text" id="inpGST" value="33AAWCA3046R1Z0" oninput="refreshInvoice()">
+                <label>Account Number</label>
+                <input type="text" id="inpBankAccNo" placeholder="e.g. EMPL212410801" oninput="refreshInvoice()">
             </div>
             <div class="input-group">
-                <label>PAN Number</label>
-                <input type="text" id="inpPAN" value="AAWCA3046R" oninput="refreshInvoice()">
+                <label>IFSC Code</label>
+                <input type="text" id="inpBankIFSC" placeholder="e.g. HDFC0001756" oninput="refreshInvoice()">
             </div>
         </div>
     </div>
 
-    <!-- INVOICE SHEET (PDF-ல் இது மட்டுமே சேமிக்கப்படும்) -->
+    <!-- INVOICE SHEET FOR PDF -->
     <div class="invoice-sheet" id="invoiceArea">
 
         <!-- Header -->
@@ -212,17 +252,15 @@
                 <td style="width: 60%;">
                     <div class="brand-name">IBO</div>
                     <div class="brand-sub" id="lblStoreName">IBO - OMR Padur</div>
-                    <div class="store-addr">
-                        458/3, Rajiv Gandhi Salai, Next to Hindusthan College,<br>
-                        Padur, Chennai, Tamil Nadu - 603103<br>
-                        Email: support@ibo.com | Web: www.ibo.com
-                    </div>
+                    <div class="store-addr" id="lblStoreAddr">458/3, Rajiv Gandhi Salai, Next to Hindusthan College,
+Padur, Chennai, Tamil Nadu - 603103
+Email: support@ibo.com | Web: www.ibo.com</div>
                 </td>
                 <td style="width: 40%; text-align: right;">
                     <div class="inv-badge">Proforma Invoice</div>
                     <table class="meta-tbl">
-                        <tr><td class="meta-lbl">Invoice No:</td><td class="meta-val" id="lblInvNo">ibo / 02</td></tr>
-                        <tr><td class="meta-lbl">Date:</td><td class="meta-val" id="lblDate">OCT 03, 2026</td></tr>
+                        <tr><td class="meta-lbl">Invoice No:</td><td class="meta-val" id="lblInvNo">-</td></tr>
+                        <tr><td class="meta-lbl">Date:</td><td class="meta-val" id="lblDate">-</td></tr>
                         <tr><td class="meta-lbl">Validity:</td><td class="meta-val" id="lblValidity">3 Days</td></tr>
                     </table>
                 </td>
@@ -234,17 +272,17 @@
             <tr>
                 <td class="addr-card">
                     <div class="addr-title">BILL TO / BUYER</div>
-                    <div class="company-name" id="lblBuyerName">ARTHY INFRASTRUCTURE PRIVATE LIMITED</div>
-                    <div id="lblBuyerAddr">SF No.117/2, Sriram Avenue, Vadavalli, Coimbatore - 641041</div>
-                    <div style="margin-top: 4px; color: #444;">
-                        <strong>GSTIN:</strong> <span id="lblGST">33AAWCA3046R1Z0</span> | <strong>PAN:</strong> <span id="lblPAN">AAWCA3046R</span>
+                    <div class="company-name" id="lblBuyerName">-</div>
+                    <div id="lblBuyerAddr">-</div>
+                    <div style="margin-top: 4px; color: #444;" id="gstContainer">
+                        <strong>GSTIN:</strong> <span id="lblGST">-</span>
                     </div>
                 </td>
                 <td style="width: 2%;"></td>
                 <td class="addr-card">
                     <div class="addr-title">SHIP TO / DISPATCH</div>
-                    <div class="company-name" id="lblShipName">ARTHY INFRASTRUCTURE PRIVATE LIMITED</div>
-                    <div id="lblShipAddr">Same as Billing Address (Coimbatore Region, TN)</div>
+                    <div class="company-name" id="lblShipName">-</div>
+                    <div id="lblShipAddr">Same as Billing Address</div>
                     <div style="margin-top: 4px; color: #444;">
                         <strong>Mode:</strong> Direct Transport / Dispatch
                     </div>
@@ -254,26 +292,23 @@
 
         <!-- Products Table -->
         <table class="items-tbl">
-            <thead id="tableHead">
-                <!-- Javascript will insert headers based on discount presence -->
-            </thead>
-            <tbody id="tableBody">
-                <!-- Product rows -->
-            </tbody>
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
         </table>
 
-        <!-- Summary & Totals -->
+        <!-- Summary & Dynamic Bank Section -->
         <table class="sum-tbl">
             <tr>
-                <td class="note-card">
-                    <div style="font-weight: 800; color: #b71c1c; text-transform: uppercase; margin-bottom: 2px;">Payment & Billing Notice</div>
-                    <div>This document reflects the proforma quotation for the requested materials. Payment should be processed as per agreed terms before shipment dispatch.</div>
+                <td class="bank-card" id="bankBox" style="display: none;">
+                    <div class="bank-card-title">BANK ACCOUNT DETAILS FOR PAYMENT</div>
+                    <div class="bank-item"><strong>Account Name:</strong> <span id="lblBankAccName">-</span></div>
+                    <div class="bank-item"><strong>Bank Name:</strong> <span id="lblBankName">-</span></div>
+                    <div class="bank-item"><strong>Account Number:</strong> <span id="lblBankAccNo">-</span></div>
+                    <div class="bank-item"><strong>IFSC Code:</strong> <span id="lblBankIFSC">-</span></div>
                 </td>
-                <td style="width: 4%;"></td>
-                <td style="width: 46%; vertical-align: top;">
-                    <table class="totals-tbl" id="totalsBody">
-                        <!-- Dynamic totals based on discount -->
-                    </table>
+                <td id="bankSpacer" style="width: 4%; display: none;"></td>
+                <td style="vertical-align: top;" id="totalsContainer">
+                    <table class="totals-tbl" id="totalsBody"></table>
                 </td>
             </tr>
         </table>
@@ -298,12 +333,60 @@
 </div>
 
 <script>
-    // Initial Item State
-    let itemsList = [
-        { offerId: "1014828777", desc: "Finolex 4 in. (110 mm) 6 Kg/cm² 6 m Agriculture Pipe", qty: 20, price: 1975, discount: 0 },
-        { offerId: "1014828299", desc: "Finolex 4 in. (110 mm) 6 Kg/cm² Coupler Agriculture Fitting", qty: 50, price: 95, discount: 0 },
-        { offerId: "1014829523", desc: "Finolex 4 in. (110 mm) 6 Kg/cm² Elbow 90° Agriculture Fitting", qty: 50, price: 170, discount: 0 }
-    ];
+    // Initial Item State (Empty)
+    let itemsList = [];
+
+    // Set today's date in Date Picker
+    window.onload = function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById("inpDate").value = today;
+        refreshInvoice();
+    };
+
+    // Store Location Dropdown Change
+    function onStoreChange() {
+        const sel = document.getElementById("storeSelect").value;
+        const nameInput = document.getElementById("inpStoreName");
+        const addrInput = document.getElementById("inpStoreAddr");
+
+        if (sel === "omr") {
+            nameInput.value = "IBO - OMR Padur";
+            addrInput.value = "458/3, Rajiv Gandhi Salai, Next to Hindusthan College,\nPadur, Chennai, Tamil Nadu - 603103\nEmail: support@ibo.com | Web: www.ibo.com";
+        } else if (sel === "saravanampatti") {
+            nameInput.value = "IBO - Saravanampatti, Coimbatore";
+            addrInput.value = "No. 46/6A1A NH 948, opp. Bus Stop, Saravanampatti,\nCoimbatore, Tamil Nadu - 641035\nEmail: support@ibo.com | Web: www.ibo.com";
+        }
+        refreshInvoice();
+    }
+
+    // Direct Excel / CSV Sample Downloader (Never Fails)
+    function downloadSampleExcel() {
+        const sampleRows = [
+            { "Offer ID": "1014828777", "Description": "Finolex 4 in. (110 mm) 6 Kg/cm² 6 m Agriculture Pipe", "Qty": 20, "Price": 1975, "Discount": 0 },
+            { "Offer ID": "1014828299", "Description": "Finolex 4 in. (110 mm) 6 Kg/cm² Coupler Agriculture Fitting", "Qty": 50, "Price": 95, "Discount": 0 },
+            { "Offer ID": "1000188867", "Description": "Dewalt D28730-IN 2300 W 355mm Chop Saw", "Qty": 1, "Price": 12499, "Discount": 374 }
+        ];
+
+        try {
+            const ws = XLSX.utils.json_to_sheet(sampleRows);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Items");
+            XLSX.writeFile(wb, "Proforma_Invoice_Template.xlsx");
+        } catch (err) {
+            // Instant CSV Fallback
+            let csv = "Offer ID,Description,Qty,Price,Discount\r\n";
+            sampleRows.forEach(r => {
+                csv += `"${r['Offer ID']}","${r['Description']}",${r['Qty']},${r['Price']},${r['Discount']}\r\n`;
+            });
+            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", "Proforma_Invoice_Template.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
 
     // Excel Upload Handler
     function importExcel(e) {
@@ -314,8 +397,7 @@
         reader.onload = function(evt) {
             const data = new Uint8Array(evt.target.result);
             const workbook = XLSX.read(data, { type: 'array' });
-            const sheetName = workbook.SheetNames[0];
-            const sheet = workbook.Sheets[sheetName];
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
             const jsonData = XLSX.utils.sheet_to_json(sheet);
 
             if (jsonData.length === 0) {
@@ -323,7 +405,6 @@
                 return;
             }
 
-            // Map and normalize fields
             itemsList = jsonData.map(row => {
                 return {
                     offerId: row['Offer ID'] || row['OFFER ID'] || row['offer_id'] || '',
@@ -340,30 +421,14 @@
         reader.readAsArrayBuffer(file);
     }
 
-    // Download Sample Excel Template
-    function downloadSampleExcel() {
-        const sampleData = [
-            { "Offer ID": "1014828777", "Description": "Finolex 4 in. (110 mm) 6 Kg/cm² 6 m Agriculture Pipe", "Qty": 20, "Price": 1975, "Discount": 0 },
-            { "Offer ID": "1014828299", "Description": "Finolex 4 in. (110 mm) 6 Kg/cm² Coupler Agriculture Fitting", "Qty": 50, "Price": 95, "Discount": 0 },
-            { "Offer ID": "1000188867", "Description": "Dewalt D28730-IN 2300 W 355mm Chop Saw", "Qty": 1, "Price": 12499, "Discount": 374 }
-        ];
-
-        const ws = XLSX.utils.json_to_sheet(sampleData);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Items");
-        XLSX.writeFile(wb, "Proforma_Invoice_Template.xlsx");
-    }
-
-    // Render Table and Summary with Conditional Discount
+    // Render Invoice Table & Discount Logic
     function renderInvoice() {
         const thead = document.getElementById("tableHead");
         const tbody = document.getElementById("tableBody");
         const totalsBody = document.getElementById("totalsBody");
 
-        // Check if ANY item has a discount > 0
         const hasDiscount = itemsList.some(item => item.discount > 0);
 
-        // Build Table Header
         if (hasDiscount) {
             thead.innerHTML = `
                 <tr>
@@ -416,4 +481,131 @@
                     <td>${item.desc}</td>
                     <td class="text-center font-bold">${item.qty}</td>
                     <td class="text-right">₹${item.price.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-                    <td class="text-right discount-highlight">${item.discount > 0 ? '-₹' + (item.discount * item.qty).toLocaleString('en-IN', {minimumFractionD
+                    <td class="text-right discount-highlight">${item.discount > 0 ? '-₹' + (item.discount * item.qty).toLocaleString('en-IN', {minimumFractionDigits: 2}) : '-'}</td>
+                    <td class="text-right font-bold">₹${lineNet.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                    <td class="text-center no-print">
+                        <button class="btn-danger" onclick="removeItem(${idx})">✕</button>
+                    </td>
+                `;
+            } else {
+                tr.innerHTML = `
+                    <td class="text-center font-bold">${idx + 1}</td>
+                    <td class="text-center font-mono">${item.offerId}</td>
+                    <td>${item.desc}</td>
+                    <td class="text-center font-bold">${item.qty}</td>
+                    <td class="text-right">₹${item.price.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                    <td class="text-right font-bold">₹${lineGross.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                    <td class="text-center no-print">
+                        <button class="btn-danger" onclick="removeItem(${idx})">✕</button>
+                    </td>
+                `;
+            }
+
+            tbody.appendChild(tr);
+        });
+
+        // Totals Box
+        if (hasDiscount) {
+            totalsBody.innerHTML = `
+                <tr class="tot-sub">
+                    <td><strong>Total Quantity:</strong></td>
+                    <td class="text-right font-bold">${totQty.toLocaleString('en-IN')} Units</td>
+                </tr>
+                <tr class="tot-sub">
+                    <td><strong>Subtotal (Gross):</strong></td>
+                    <td class="text-right font-bold">₹${totGross.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                </tr>
+                <tr class="tot-sub">
+                    <td style="color: #b71c1c; font-weight: 700;"><strong>Discount Savings:</strong></td>
+                    <td class="text-right font-bold" style="color: #b71c1c;">-₹${totDiscount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                </tr>
+                <tr class="tot-grand">
+                    <td>GRAND TOTAL:</td>
+                    <td class="text-right">₹${totNet.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                </tr>
+            `;
+        } else {
+            totalsBody.innerHTML = `
+                <tr class="tot-sub">
+                    <td><strong>Total Quantity:</strong></td>
+                    <td class="text-right font-bold">${totQty.toLocaleString('en-IN')} Units</td>
+                </tr>
+                <tr class="tot-sub">
+                    <td><strong>Subtotal:</strong></td>
+                    <td class="text-right font-bold">₹${totGross.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                </tr>
+                <tr class="tot-grand">
+                    <td>GRAND TOTAL:</td>
+                    <td class="text-right">₹${totGross.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                </tr>
+            `;
+        }
+    }
+
+    function removeItem(index) {
+        itemsList.splice(index, 1);
+        renderInvoice();
+    }
+
+    // Refresh Preview & Toggle Bank Details
+    function refreshInvoice() {
+        document.getElementById("lblStoreName").innerText = document.getElementById("inpStoreName").value;
+        document.getElementById("lblStoreAddr").innerText = document.getElementById("inpStoreAddr").value;
+        
+        document.getElementById("lblInvNo").innerText = document.getElementById("inpInvNo").value.trim() || "-";
+        
+        // Date formatting
+        const rawDate = document.getElementById("inpDate").value;
+        if (rawDate) {
+            const d = new Date(rawDate);
+            const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+            document.getElementById("lblDate").innerText = `${months[d.getMonth()]} ${String(d.getDate()).padStart(2, '0')}, ${d.getFullYear()}`;
+        } else {
+            document.getElementById("lblDate").innerText = "-";
+        }
+
+        document.getElementById("lblValidity").innerText = document.getElementById("inpValidity").value || "3 Days";
+
+        const buyer = document.getElementById("inpBuyerName").value.trim();
+        document.getElementById("lblBuyerName").innerText = buyer || "-";
+        document.getElementById("lblShipName").innerText = buyer || "-";
+
+        document.getElementById("lblBuyerAddr").innerText = document.getElementById("inpBuyerAddr").value.trim() || "-";
+        
+        const gst = document.getElementById("inpGST").value.trim();
+        document.getElementById("lblGST").innerText = gst || "-";
+        document.getElementById("gstContainer").style.display = gst ? "block" : "none";
+
+        // Bank Details Validation & Conditional Visibility
+        const bAccName = document.getElementById("inpBankAccName").value.trim();
+        const bName = document.getElementById("inpBankName").value.trim();
+        const bAccNo = document.getElementById("inpBankAccNo").value.trim();
+        const bIFSC = document.getElementById("inpBankIFSC").value.trim();
+
+        const bankBox = document.getElementById("bankBox");
+        const bankSpacer = document.getElementById("bankSpacer");
+        const totalsContainer = document.getElementById("totalsContainer");
+
+        if (bAccName || bName || bAccNo || bIFSC) {
+            bankBox.style.display = "table-cell";
+            bankSpacer.style.display = "table-cell";
+            totalsContainer.style.width = "44%";
+            
+            document.getElementById("lblBankAccName").innerText = bAccName || "-";
+            document.getElementById("lblBankName").innerText = bName || "-";
+            document.getElementById("lblBankAccNo").innerText = bAccNo || "-";
+            document.getElementById("lblBankIFSC").innerText = bIFSC || "-";
+        } else {
+            // Hide Bank Box completely if no entry
+            bankBox.style.display = "none";
+            bankSpacer.style.display = "none";
+            totalsContainer.style.width = "48%";
+            totalsContainer.style.marginLeft = "auto";
+        }
+    }
+
+    renderInvoice();
+</script>
+
+</body>
+</html>
