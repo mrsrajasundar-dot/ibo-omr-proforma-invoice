@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proforma Invoice - Excel Upload & Auto PDF</title>
+    <!-- SheetJS library for reading and downloading Excel files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+        body { background: #f0f2f5; padding: 20px; color: #2c2c2c; }
+
+        .container { max-width: 950px; margin: 0 auto; }
+
+        /* Control Panel */
+        .control-panel {
+            background: #ffffff;
+            padding: 20px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            margin-bottom: 25px;
+        }
+        .panel-title { color: #b71c1c; font-size: 15pt; font-weight: 800; border-bottom: 2px solid #b71c1c; padding-bottom: 6px; margin-bottom: 15px; }
+
+        .grid-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 15px; }
+        .input-group { display: flex; flex-direction: column; }
+        .input-group label { font-size: 8pt; font-weight: 700; color: #555; margin-bottom: 4px; text-transform: uppercase; }
+        .input-group input { padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 8.5pt; outline: none; }
+        .input-group input:focus { border-color: #b71c1c; }
+
+        /* Excel Upload Box */
+        .upload-section {
+            background: #fff8f8;
+            border: 2px dashed #ef9a9a;
+            border-radius: 6px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .upload-info h4 { color: #b71c1c; font-size: 10pt; margin-bottom: 3px; }
+        .upload-info p { font-size: 8pt; color: #666; }
+
+        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn {
+            padding: 9px 15px; font-size: 8.5pt; font-weight: 700; border: none; border-radius: 4px;
+            cursor: pointer; transition: 0.2s; text-decoration: none; display: inline-flex; align-items: center;
+        }
+        .btn-template { background: #2e7d32; color: white; }
+        .btn-template:hover { background: #1b5e20; }
+        .btn-upload { background: #b71c1c; color: white; position: relative; overflow: hidden; }
+        .btn-upload:hover { background: #8e0000; }
+        .btn-upload input[type="file"] {
+            position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer;
+        }
+        .btn-print { background: #b71c1c; color: white; font-size: 10.5pt; padding: 11px 22px; box-shadow: 0 4px 10px rgba(183,28,28,0.25); }
+        .btn-print:hover { background: #8e0000; }
+        .btn-danger { background: #c62828; color: white; padding: 3px 7px; font-size: 7.5pt; border-radius: 3px; }
+
+        /* Invoice Preview Area */
+        .invoice-sheet {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 6px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        /* Red Theme Invoice */
+        .header-tbl {
+            width: 100%; border-collapse: collapse;
+            background: linear-gradient(135deg, #b71c1c 0%, #8e0000 100%);
+            color: white; border-radius: 4px; margin-bottom: 12px;
+        }
+        .header-tbl td { padding: 12px 14px; vertical-align: top; }
+        .brand-name { font-size: 19pt; font-weight: 800; letter-spacing: 1px; }
+        .brand-sub { font-size: 9.5pt; font-weight: 700; color: #ffcdd2; margin: 2px 0 3px; }
+        .store-addr { font-size: 7.8pt; color: #ffebee; line-height: 1.35; }
+        
+        .inv-badge {
+            background: #6d0000; font-size: 13pt; font-weight: 800; text-transform: uppercase;
+            padding: 3px 10px; border-radius: 3px; display: inline-block; margin-bottom: 6px;
+        }
+        .meta-tbl { margin-left: auto; font-size: 8pt; border-collapse: collapse; }
+        .meta-tbl td { padding: 1px 4px; text-align: right; }
+        .meta-lbl { color: #ffcdd2; font-weight: 600; }
+        .meta-val { font-weight: 700; color: #ffffff; }
+
+        .address-tbl { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+        .addr-card {
+            width: 49%; border: 1px solid #e0e0e0; border-top: 3px solid #b71c1c;
+            border-radius: 3px; padding: 8px 10px; background: #fafafa; vertical-align: top; font-size: 7.8pt;
+        }
+        .addr-title { font-size: 8pt; font-weight: 800; color: #b71c1c; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid #eee; padding-bottom: 2px; }
+        .company-name { font-size: 8.6pt; font-weight: 700; color: #111; margin-bottom: 2px; }
+
+        /* Items Table */
+        .items-tbl { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+        .items-tbl th {
+            background: #b71c1c; color: white; font-size: 7.6pt; font-weight: 700;
+            text-transform: uppercase; padding: 6px 5px; border: 1px solid #9a1010; text-align: left;
+        }
+        .items-tbl td { padding: 6px 5px; font-size: 7.5pt; border: 1px solid #e0e0e0; vertical-align: middle; }
+        .items-tbl tr:nth-child(even) { background: #fff9f9; }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .font-mono { font-family: monospace; font-size: 7.3pt; }
+        .font-bold { font-weight: 700; }
+        .discount-highlight { color: #b71c1c; font-weight: 700; }
+
+        /* Summary */
+        .sum-tbl { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        .note-card {
+            width: 50%; border: 1px solid #ffcdd2; background: #fff5f5; border-left: 4px solid #b71c1c;
+            border-radius: 3px; padding: 8px 10px; font-size: 7.5pt; vertical-align: middle;
+        }
+        .totals-tbl { width: 100%; border-collapse: collapse; border: 1px solid #d32f2f; border-radius: 3px; font-size: 8pt; }
+        .totals-tbl td { padding: 5px 8px; }
+        .tot-sub { background: #fff5f5; border-bottom: 1px solid #ffe0e0; }
+        .tot-grand { background: #b71c1c; color: white !important; font-weight: 800; font-size: 9.5pt; }
+
+        .terms-card {
+            border: 1px dashed #e0e0e0; background: #fffcfc; padding: 8px 10px;
+            border-radius: 3px; font-size: 7.2pt; color: #555;
+        }
+        .terms-title { font-weight: 700; color: #b71c1c; margin-bottom: 2px; text-transform: uppercase; font-size: 7.5pt; }
+
+        .footer-line { margin-top: 12px; text-align: center; font-size: 7.5pt; color: #777; border-top: 1px solid #eee; padding-top: 6px; }
+
+        /* Print Settings for Pure Vector PDF */
+        @media print {
+            body { background: white; padding: 0; }
+            .control-panel { display: none !important; }
+            .invoice-sheet { box-shadow: none; padding: 0; width: 100%; }
+            .no-print { display: none !important; }
+            @page { size: A4 portrait; margin: 10mm; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- CONTROLS & EXCEL UPLOADER -->
+    <div class="control-panel">
+        <div class="panel-title">Proforma Invoice Generator (Excel Integration)</div>
+
+        <!-- Excel Upload Bar -->
+        <div class="upload-section">
+            <div class="upload-info">
+                <h4>Excel Data Upload</h4>
+                <p>Excel கோப்பை (.xlsx, .xls, .csv) தேர்ந்தெடுத்து அப்லோட் செய்யவும்.</p>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-template" onclick="downloadSampleExcel()">📥 Download Sample Excel</button>
+                <div class="btn btn-upload">
+                    📂 Upload Excel File
+                    <input type="file" id="excelInput" accept=".xlsx, .xls, .csv" onchange="importExcel(event)">
+                </div>
+                <button class="btn btn-print" onclick="window.print()">🖨️ Download / Print PDF</button>
+            </div>
+        </div>
+
+        <!-- Invoice Details Inputs -->
+        <div class="grid-row">
+            <div class="input-group">
+                <label>Invoice No</label>
+                <input type="text" id="inpInvNo" value="ibo / 02" oninput="refreshInvoice()">
+            </div>
+            <div class="input-group">
+                <label>Date</label>
+                <input type="text" id="inpDate" value="OCT 03, 2026" oninput="refreshInvoice()">
+            </div>
+            <div class="input-group">
+                <label>Validity</label>
+                <input type="text" id="inpValidity" value="3 Days" oninput="refreshInvoice()">
+            </div>
+            <div class="input-group">
+                <label>Store Location</label>
+                <input type="text" id="inpStoreName" value="IBO - OMR Padur" oninput="refreshInvoice()">
+            </div>
+        </div>
+
+        <div class="grid-row">
+            <div class="input-group">
+                <label>Customer Name</label>
+                <input type="text" id="inpBuyerName" value="ARTHY INFRASTRUCTURE PRIVATE LIMITED" oninput="refreshInvoice()">
+            </div>
+            <div class="input-group">
+                <label>Address</label>
+                <input type="text" id="inpBuyerAddr" value="SF No.117/2, Sriram Avenue, Vadavalli, Coimbatore - 641041" oninput="refreshInvoice()">
+            </div>
+            <div class="input-group">
+                <label>GSTIN</label>
+                <input type="text" id="inpGST" value="33AAWCA3046R1Z0" oninput="refreshInvoice()">
+            </div>
+            <div class="input-group">
+                <label>PAN Number</label>
+                <input type="text" id="inpPAN" value="AAWCA3046R" oninput="refreshInvoice()">
+            </div>
+        </div>
+    </div>
+
+    <!-- INVOICE SHEET (PDF-ல் இது மட்டுமே சேமிக்கப்படும்) -->
+    <div class="invoice-sheet" id="invoiceArea">
+
+        <!-- Header -->
+        <table class="header-tbl">
+            <tr>
+                <td style="width: 60%;">
+                    <div class="brand-name">IBO</div>
+                    <div class="brand-sub" id="lblStoreName">IBO - OMR Padur</div>
+                    <div class="store-addr">
+                        458/3, Rajiv Gandhi Salai, Next to Hindusthan College,<br>
+                        Padur, Chennai, Tamil Nadu - 603103<br>
+                        Email: support@ibo.com | Web: www.ibo.com
+                    </div>
+                </td>
+                <td style="width: 40%; text-align: right;">
+                    <div class="inv-badge">Proforma Invoice</div>
+                    <table class="meta-tbl">
+                        <tr><td class="meta-lbl">Invoice No:</td><td class="meta-val" id="lblInvNo">ibo / 02</td></tr>
+                        <tr><td class="meta-lbl">Date:</td><td class="meta-val" id="lblDate">OCT 03, 2026</td></tr>
+                        <tr><td class="meta-lbl">Validity:</td><td class="meta-val" id="lblValidity">3 Days</td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Addresses -->
+        <table class="address-tbl">
+            <tr>
+                <td class="addr-card">
+                    <div class="addr-title">BILL TO / BUYER</div>
+                    <div class="company-name" id="lblBuyerName">ARTHY INFRASTRUCTURE PRIVATE LIMITED</div>
+                    <div id="lblBuyerAddr">SF No.117/2, Sriram Avenue, Vadavalli, Coimbatore - 641041</div>
+                    <div style="margin-top: 4px; color: #444;">
+                        <strong>GSTIN:</strong> <span id="lblGST">33AAWCA3046R1Z0</span> | <strong>PAN:</strong> <span id="lblPAN">AAWCA3046R</span>
+                    </div>
+                </td>
+                <td style="width: 2%;"></td>
+                <td class="addr-card">
+                    <div class="addr-title">SHIP TO / DISPATCH</div>
+                    <div class="company-name" id="lblShipName">ARTHY INFRASTRUCTURE PRIVATE LIMITED</div>
+                    <div id="lblShipAddr">Same as Billing Address (Coimbatore Region, TN)</div>
+                    <div style="margin-top: 4px; color: #444;">
+                        <strong>Mode:</strong> Direct Transport / Dispatch
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Products Table -->
+        <table class="items-tbl">
+            <thead id="tableHead">
+                <!-- Javascript will insert headers based on discount presence -->
+            </thead>
+            <tbody id="tableBody">
+                <!-- Product rows -->
+            </tbody>
+        </table>
+
+        <!-- Summary & Totals -->
+        <table class="sum-tbl">
+            <tr>
+                <td class="note-card">
+                    <div style="font-weight: 800; color: #b71c1c; text-transform: uppercase; margin-bottom: 2px;">Payment & Billing Notice</div>
+                    <div>This document reflects the proforma quotation for the requested materials. Payment should be processed as per agreed terms before shipment dispatch.</div>
+                </td>
+                <td style="width: 4%;"></td>
+                <td style="width: 46%; vertical-align: top;">
+                    <table class="totals-tbl" id="totalsBody">
+                        <!-- Dynamic totals based on discount -->
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Terms -->
+        <div class="terms-card">
+            <div class="terms-title">TERMS & CONDITIONS</div>
+            <ol style="padding-left: 14px; line-height: 1.35;">
+                <li>This is a Proforma Invoice only, not a commercial tax invoice.</li>
+                <li>Prices mentioned are inclusive of all applicable taxes unless listed otherwise.</li>
+                <li>Goods will be dispatched only after full reflection of payment.</li>
+                <li>Validity of this proforma invoice is 3 days from date of issue.</li>
+            </ol>
+        </div>
+
+        <div class="footer-line">
+            EBO Mart Pvt Ltd | Proforma Invoice
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    // Initial Item State
+    let itemsList = [
+        { offerId: "1014828777", desc: "Finolex 4 in. (110 mm) 6 Kg/cm² 6 m Agriculture Pipe", qty: 20, price: 1975, discount: 0 },
+        { offerId: "1014828299", desc: "Finolex 4 in. (110 mm) 6 Kg/cm² Coupler Agriculture Fitting", qty: 50, price: 95, discount: 0 },
+        { offerId: "1014829523", desc: "Finolex 4 in. (110 mm) 6 Kg/cm² Elbow 90° Agriculture Fitting", qty: 50, price: 170, discount: 0 }
+    ];
+
+    // Excel Upload Handler
+    function importExcel(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            const data = new Uint8Array(evt.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const sheet = workbook.Sheets[sheetName];
+            const jsonData = XLSX.utils.sheet_to_json(sheet);
+
+            if (jsonData.length === 0) {
+                alert("Excel கோப்பில் தகவல்கள் எதுவும் இல்லை!");
+                return;
+            }
+
+            // Map and normalize fields
+            itemsList = jsonData.map(row => {
+                return {
+                    offerId: row['Offer ID'] || row['OFFER ID'] || row['offer_id'] || '',
+                    desc: row['Description'] || row['DESCRIPTION'] || row['Description of Goods'] || '',
+                    qty: Number(row['Qty'] || row['QTY'] || row['Quantity'] || 1),
+                    price: Number(row['Price'] || row['PRICE'] || row['Unit Price'] || 0),
+                    discount: Number(row['Discount'] || row['DISCOUNT'] || 0)
+                };
+            });
+
+            renderInvoice();
+            alert("Excel தரவு வெற்றிகரமாக பதிவேற்றப்பட்டது! (" + itemsList.length + " பொருட்கள் சேர்க்கப்பட்டன)");
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    // Download Sample Excel Template
+    function downloadSampleExcel() {
+        const sampleData = [
+            { "Offer ID": "1014828777", "Description": "Finolex 4 in. (110 mm) 6 Kg/cm² 6 m Agriculture Pipe", "Qty": 20, "Price": 1975, "Discount": 0 },
+            { "Offer ID": "1014828299", "Description": "Finolex 4 in. (110 mm) 6 Kg/cm² Coupler Agriculture Fitting", "Qty": 50, "Price": 95, "Discount": 0 },
+            { "Offer ID": "1000188867", "Description": "Dewalt D28730-IN 2300 W 355mm Chop Saw", "Qty": 1, "Price": 12499, "Discount": 374 }
+        ];
+
+        const ws = XLSX.utils.json_to_sheet(sampleData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Items");
+        XLSX.writeFile(wb, "Proforma_Invoice_Template.xlsx");
+    }
+
+    // Render Table and Summary with Conditional Discount
+    function renderInvoice() {
+        const thead = document.getElementById("tableHead");
+        const tbody = document.getElementById("tableBody");
+        const totalsBody = document.getElementById("totalsBody");
+
+        // Check if ANY item has a discount > 0
+        const hasDiscount = itemsList.some(item => item.discount > 0);
+
+        // Build Table Header
+        if (hasDiscount) {
+            thead.innerHTML = `
+                <tr>
+                    <th class="text-center" style="width: 4%;">#</th>
+                    <th class="text-center" style="width: 14%;">Offer ID</th>
+                    <th style="width: 42%;">Description of Goods</th>
+                    <th class="text-center" style="width: 6%;">Qty</th>
+                    <th class="text-right" style="width: 11%;">Price (₹)</th>
+                    <th class="text-right" style="width: 11%;">Discount (₹)</th>
+                    <th class="text-right" style="width: 12%;">Net Total (₹)</th>
+                    <th class="text-center no-print" style="width: 4%;">Act</th>
+                </tr>
+            `;
+        } else {
+            thead.innerHTML = `
+                <tr>
+                    <th class="text-center" style="width: 4%;">#</th>
+                    <th class="text-center" style="width: 15%;">Offer ID</th>
+                    <th style="width: 48%;">Description of Goods</th>
+                    <th class="text-center" style="width: 7%;">Qty</th>
+                    <th class="text-right" style="width: 13%;">Price (₹)</th>
+                    <th class="text-right" style="width: 13%;">Total (₹)</th>
+                    <th class="text-center no-print" style="width: 4%;">Act</th>
+                </tr>
+            `;
+        }
+
+        tbody.innerHTML = "";
+        let totQty = 0;
+        let totGross = 0;
+        let totDiscount = 0;
+        let totNet = 0;
+
+        itemsList.forEach((item, idx) => {
+            const lineGross = item.qty * item.price;
+            const lineDisc = item.qty * (item.discount || 0);
+            const lineNet = lineGross - lineDisc;
+
+            totQty += item.qty;
+            totGross += lineGross;
+            totDiscount += lineDisc;
+            totNet += lineNet;
+
+            const tr = document.createElement("tr");
+
+            if (hasDiscount) {
+                tr.innerHTML = `
+                    <td class="text-center font-bold">${idx + 1}</td>
+                    <td class="text-center font-mono">${item.offerId}</td>
+                    <td>${item.desc}</td>
+                    <td class="text-center font-bold">${item.qty}</td>
+                    <td class="text-right">₹${item.price.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                    <td class="text-right discount-highlight">${item.discount > 0 ? '-₹' + (item.discount * item.qty).toLocaleString('en-IN', {minimumFractionD
