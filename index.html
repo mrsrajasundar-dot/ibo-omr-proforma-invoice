@@ -4,151 +4,425 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Proforma Invoice Generator</title>
-    <!-- SheetJS library -->
+    <!-- SheetJS for Excel Reading -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
-        body { background: #f0f2f5; padding: 20px; color: #2c2c2c; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        body {
+            background: #f0f2f5;
+            padding: 16px;
+            color: #2c2c2c;
+        }
 
-        .container { max-width: 950px; margin: 0 auto; }
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+        }
 
         /* Control Panel */
         .control-panel {
             background: #ffffff;
-            padding: 20px 24px;
+            padding: 18px 20px;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
-        .panel-title { color: #b71c1c; font-size: 15pt; font-weight: 800; border-bottom: 2px solid #b71c1c; padding-bottom: 6px; margin-bottom: 15px; }
+        .panel-title {
+            color: #b71c1c;
+            font-size: 14pt;
+            font-weight: 800;
+            border-bottom: 2px solid #b71c1c;
+            padding-bottom: 6px;
+            margin-bottom: 12px;
+        }
 
-        .grid-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px; }
-        .input-group { display: flex; flex-direction: column; }
-        .input-group label { font-size: 7.8pt; font-weight: 700; color: #555; margin-bottom: 4px; text-transform: uppercase; }
+        .grid-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .input-group label {
+            font-size: 7.5pt;
+            font-weight: 700;
+            color: #555;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+        }
         .input-group input, .input-group select, .input-group textarea {
-            padding: 7px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 8.5pt; outline: none; transition: 0.2s;
+            padding: 7px 9px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 8.5pt;
+            outline: none;
+            transition: 0.2s;
         }
-        .input-group input:focus, .input-group select:focus, .input-group textarea:focus { border-color: #b71c1c; }
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+            border-color: #b71c1c;
+        }
 
-        /* Compact store address textarea */
-        #inpStoreAddr { height: 46px; resize: vertical; font-size: 8pt; line-height: 1.3; }
+        /* Compact Store Address box */
+        #inpStoreAddr {
+            height: 48px;
+            resize: vertical;
+            font-size: 7.8pt;
+            line-height: 1.3;
+        }
 
         /* Excel Upload Section */
         .upload-section {
             background: #fff8f8;
             border: 2px dashed #ef9a9a;
             border-radius: 6px;
-            padding: 14px 18px;
+            padding: 12px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 15px;
+            gap: 10px;
+            margin-bottom: 12px;
         }
-        .upload-info h4 { color: #b71c1c; font-size: 10pt; margin-bottom: 3px; }
-        .upload-info p { font-size: 8pt; color: #666; }
+        .upload-info h4 {
+            color: #b71c1c;
+            font-size: 9.5pt;
+            margin-bottom: 2px;
+        }
+        .upload-info p {
+            font-size: 7.5pt;
+            color: #666;
+        }
 
-        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
         .btn {
-            padding: 9px 15px; font-size: 8.5pt; font-weight: 700; border: none; border-radius: 4px;
-            cursor: pointer; transition: 0.2s; text-decoration: none; display: inline-flex; align-items: center;
+            padding: 8px 14px;
+            font-size: 8.2pt;
+            font-weight: 700;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
         }
-        .btn-template { background: #2e7d32; color: white; }
-        .btn-template:hover { background: #1b5e20; }
-        .btn-upload { background: #b71c1c; color: white; position: relative; overflow: hidden; }
-        .btn-upload:hover { background: #8e0000; }
+        .btn-template {
+            background: #2e7d32;
+            color: white;
+        }
+        .btn-template:hover {
+            background: #1b5e20;
+        }
+        .btn-upload {
+            background: #b71c1c;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-upload:hover {
+            background: #8e0000;
+        }
         .btn-upload input[type="file"] {
-            position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
         }
-        .btn-print { background: #b71c1c; color: white; font-size: 10.5pt; padding: 11px 22px; box-shadow: 0 4px 10px rgba(183,28,28,0.25); }
-        .btn-print:hover { background: #8e0000; }
-        .btn-danger { background: #c62828; color: white; padding: 3px 7px; font-size: 7.5pt; border-radius: 3px; }
+        .btn-print {
+            background: #b71c1c;
+            color: white;
+            font-size: 9.5pt;
+            padding: 10px 20px;
+            box-shadow: 0 4px 10px rgba(183,28,28,0.25);
+        }
+        .btn-print:hover {
+            background: #8e0000;
+        }
+        .btn-danger {
+            background: #c62828;
+            color: white;
+            padding: 3px 6px;
+            font-size: 7pt;
+            border-radius: 3px;
+        }
 
-        .section-sub { font-size: 8.8pt; font-weight: 700; color: #b71c1c; margin: 10px 0 6px; text-transform: uppercase; border-bottom: 1px dashed #ef9a9a; padding-bottom: 3px; }
+        .section-sub {
+            font-size: 8.2pt;
+            font-weight: 700;
+            color: #b71c1c;
+            margin: 8px 0 5px;
+            text-transform: uppercase;
+            border-bottom: 1px dashed #ef9a9a;
+            padding-bottom: 2px;
+        }
 
-        /* Invoice Sheet */
+        /* Invoice Sheet (Looks exactly like the original red template) */
         .invoice-sheet {
             background: #ffffff;
-            padding: 25px;
+            padding: 20px 25px;
             border-radius: 6px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
 
         .header-tbl {
-            width: 100%; border-collapse: collapse;
-            background: linear-gradient(135deg, #b71c1c 0%, #8e0000 100%) !important;
-            color: white !important; border-radius: 4px; margin-bottom: 12px;
+            width: 100%;
+            border-collapse: collapse;
+            background: #b71c1c !important;
+            color: #ffffff !important;
+            border-radius: 4px;
+            margin-bottom: 12px;
         }
-        .header-tbl td { padding: 12px 14px; vertical-align: top; }
-        .brand-name { font-size: 19pt; font-weight: 800; letter-spacing: 1px; color: white !important; }
-        .brand-sub { font-size: 9.5pt; font-weight: 700; color: #ffcdd2 !important; margin: 2px 0 3px; }
-        .store-addr { font-size: 7.8pt; color: #ffebee !important; line-height: 1.35; white-space: pre-line; }
+        .header-tbl td {
+            padding: 12px 14px;
+            vertical-align: top;
+            background: #b71c1c !important;
+            color: #ffffff !important;
+        }
+        .brand-name {
+            font-size: 19pt;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #ffffff !important;
+        }
+        .brand-sub {
+            font-size: 9.5pt;
+            font-weight: 700;
+            color: #ffcdd2 !important;
+            margin: 2px 0 3px;
+        }
+        .store-addr {
+            font-size: 7.8pt;
+            color: #ffebee !important;
+            line-height: 1.35;
+            white-space: pre-line;
+        }
         
         .inv-badge {
-            background: #6d0000 !important; color: white !important; font-size: 13pt; font-weight: 800; text-transform: uppercase;
-            padding: 3px 10px; border-radius: 3px; display: inline-block; margin-bottom: 6px;
+            background: #6d0000 !important;
+            color: #ffffff !important;
+            font-size: 13pt;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 3px;
+            display: inline-block;
+            margin-bottom: 6px;
         }
-        .meta-tbl { margin-left: auto; font-size: 8pt; border-collapse: collapse; }
-        .meta-tbl td { padding: 1px 4px; text-align: right; }
-        .meta-lbl { color: #ffcdd2 !important; font-weight: 600; }
-        .meta-val { font-weight: 700; color: #ffffff !important; }
+        .meta-tbl {
+            margin-left: auto;
+            font-size: 8pt;
+            border-collapse: collapse;
+        }
+        .meta-tbl td {
+            padding: 1px 4px;
+            text-align: right;
+            background: transparent !important;
+        }
+        .meta-lbl {
+            color: #ffcdd2 !important;
+            font-weight: 600;
+        }
+        .meta-val {
+            font-weight: 700;
+            color: #ffffff !important;
+        }
 
-        .address-tbl { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
-        .addr-card {
-            width: 49%; border: 1px solid #e0e0e0; border-top: 3px solid #b71c1c !important;
-            border-radius: 3px; padding: 8px 10px; background: #fafafa !important; vertical-align: top; font-size: 7.8pt;
+        .address-tbl {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
         }
-        .addr-title { font-size: 8pt; font-weight: 800; color: #b71c1c !important; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid #eee; padding-bottom: 2px; }
-        .company-name { font-size: 8.6pt; font-weight: 700; color: #111; margin-bottom: 2px; }
+        .addr-card {
+            width: 49%;
+            border: 1px solid #e0e0e0;
+            border-top: 3px solid #b71c1c !important;
+            border-radius: 3px;
+            padding: 8px 10px;
+            background: #fafafa !important;
+            vertical-align: top;
+            font-size: 7.8pt;
+        }
+        .addr-title {
+            font-size: 8pt;
+            font-weight: 800;
+            color: #b71c1c !important;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 2px;
+        }
+        .company-name {
+            font-size: 8.6pt;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 2px;
+        }
 
         /* Items Table */
-        .items-tbl { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
-        .items-tbl th {
-            background: #b71c1c !important; color: white !important; font-size: 7.6pt; font-weight: 700;
-            text-transform: uppercase; padding: 6px 5px; border: 1px solid #9a1010; text-align: left;
+        .items-tbl {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
         }
-        .items-tbl td { padding: 6px 5px; font-size: 7.5pt; border: 1px solid #e0e0e0; vertical-align: middle; }
-        .items-tbl tr:nth-child(even) { background: #fff9f9 !important; }
+        .items-tbl th {
+            background: #b71c1c !important;
+            color: #ffffff !important;
+            font-size: 7.6pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 6px 5px;
+            border: 1px solid #9a1010;
+            text-align: left;
+        }
+        .items-tbl td {
+            padding: 6px 5px;
+            font-size: 7.5pt;
+            border: 1px solid #e0e0e0;
+            vertical-align: middle;
+        }
+        .items-tbl tr:nth-child(even) {
+            background: #fff9f9 !important;
+        }
         .text-center { text-align: center; }
         .text-right { text-align: right; }
         .font-mono { font-family: monospace; font-size: 7.3pt; }
         .font-bold { font-weight: 700; }
 
         /* Summary & Dynamic Bank Section */
-        .sum-tbl { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-        .bank-card {
-            width: 52%; border: 1px solid #ffcdd2; background: #fff5f5 !important; border-left: 4px solid #b71c1c !important;
-            border-radius: 3px; padding: 8px 10px; font-size: 7.8pt; vertical-align: top;
+        .sum-tbl {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
         }
-        .bank-card-title { font-size: 8pt; font-weight: 800; color: #b71c1c !important; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid #ffe0e0; padding-bottom: 2px; }
-        .bank-item { margin-bottom: 2px; }
-        .bank-item strong { color: #444; }
+        .bank-card {
+            width: 52%;
+            border: 1px solid #ffcdd2;
+            background: #fff5f5 !important;
+            border-left: 4px solid #b71c1c !important;
+            border-radius: 3px;
+            padding: 8px 10px;
+            font-size: 7.8pt;
+            vertical-align: top;
+        }
+        .bank-card-title {
+            font-size: 8pt;
+            font-weight: 800;
+            color: #b71c1c !important;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            border-bottom: 1px solid #ffe0e0;
+            padding-bottom: 2px;
+        }
+        .bank-item {
+            margin-bottom: 2px;
+        }
+        .bank-item strong {
+            color: #444;
+        }
 
-        .totals-tbl { width: 100%; border-collapse: collapse; border: 1px solid #d32f2f; border-radius: 3px; font-size: 8pt; }
-        .totals-tbl td { padding: 5px 8px; }
-        .tot-sub { background: #fff5f5 !important; border-bottom: 1px solid #ffe0e0; }
-        .tot-grand { background: #b71c1c !important; color: white !important; font-weight: 800; font-size: 9.5pt; }
+        .totals-tbl {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #d32f2f;
+            border-radius: 3px;
+            font-size: 8pt;
+        }
+        .totals-tbl td {
+            padding: 5px 8px;
+        }
+        .tot-sub {
+            background: #fff5f5 !important;
+            border-bottom: 1px solid #ffe0e0;
+        }
+        .tot-grand {
+            background: #b71c1c !important;
+            color: #ffffff !important;
+            font-weight: 800;
+            font-size: 9.5pt;
+        }
 
         .terms-card {
-            border: 1px dashed #e0e0e0; background: #fffcfc !important; padding: 8px 10px;
-            border-radius: 3px; font-size: 7.2pt; color: #555;
+            border: 1px dashed #e0e0e0;
+            background: #fffcfc !important;
+            padding: 8px 10px;
+            border-radius: 3px;
+            font-size: 7.2pt;
+            color: #555;
         }
-        .terms-title { font-weight: 700; color: #b71c1c !important; margin-bottom: 2px; text-transform: uppercase; font-size: 7.5pt; }
+        .terms-title {
+            font-weight: 700;
+            color: #b71c1c !important;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+            font-size: 7.5pt;
+        }
 
-        .footer-line { margin-top: 12px; text-align: center; font-size: 7.5pt; color: #777; border-top: 1px solid #eee; padding-top: 6px; }
+        .footer-line {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 7.5pt;
+            color: #777;
+            border-top: 1px solid #eee;
+            padding-top: 6px;
+        }
 
-        /* PRINT SETTINGS - PRESERVES FULL RED THEME IN PDF */
+        /* STRICT PRINT STYLING TO KEEP RED THEME ACCURATE IN PDF */
         @media print {
             * {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
                 color-adjust: exact !important;
             }
-            body { background: white !important; padding: 0 !important; }
-            .control-panel, .no-print { display: none !important; }
-            .invoice-sheet { box-shadow: none !important; padding: 0 !important; width: 100% !important; border: none !important; }
-            @page { size: A4 portrait; margin: 8mm 10mm; }
+            body {
+                background: #ffffff !important;
+                padding: 0 !important;
+            }
+            .control-panel, .no-print {
+                display: none !important;
+            }
+            .invoice-sheet {
+                box-shadow: none !important;
+                padding: 0 !important;
+                width: 100% !important;
+                border: none !important;
+            }
+            .header-tbl {
+                background: #b71c1c !important;
+            }
+            .header-tbl td {
+                background: #b71c1c !important;
+            }
+            .inv-badge {
+                background: #6d0000 !important;
+            }
+            .items-tbl th {
+                background: #b71c1c !important;
+                color: #ffffff !important;
+            }
+            .tot-grand {
+                background: #b71c1c !important;
+                color: #ffffff !important;
+            }
+            @page {
+                size: A4 portrait;
+                margin: 8mm 10mm;
+            }
         }
     </style>
 </head>
@@ -164,7 +438,7 @@
         <div class="upload-section">
             <div class="upload-info">
                 <h4>Excel Data Upload</h4>
-                <p>Headline mathram ulla sample file download cheythu data enter cheythu upload cheyyuka.</p>
+                <p>மாதிரி Excel ஃபைலை டவுன்லோட் செய்து, அதில் பொருட்களை உள்ளிட்ட பின் அப்லோட் செய்யவும்.</p>
             </div>
             <div class="btn-group">
                 <button class="btn btn-template" onclick="downloadSampleExcel()">📥 Download Sample Excel</button>
@@ -200,11 +474,11 @@ Email: support@ibo.com | Web: www.ibo.com</textarea>
         </div>
 
         <!-- 2. Invoice & Customer Information -->
-        <div class="section-sub">2. Invoice & Customer Information</div>
+        <div class="section-sub">2. Invoice & Customer Information (தேவைப்பட்டால் உள்ளிடவும்)</div>
         <div class="grid-row">
             <div class="input-group">
                 <label>Invoice Number</label>
-                <input type="text" id="inpInvNo" placeholder="Enter Invoice No" oninput="refreshInvoice()">
+                <input type="text" id="inpInvNo" placeholder="Invoice No உள்ளிடவும்" oninput="refreshInvoice()">
             </div>
             <div class="input-group">
                 <label>Invoice Date</label>
@@ -216,40 +490,40 @@ Email: support@ibo.com | Web: www.ibo.com</textarea>
             </div>
             <div class="input-group">
                 <label>Customer GSTIN</label>
-                <input type="text" id="inpGST" placeholder="Enter GSTIN (Optional)" oninput="refreshInvoice()">
+                <input type="text" id="inpGST" placeholder="GSTIN (இருந்தால் மட்டும்)" oninput="refreshInvoice()">
             </div>
         </div>
 
         <div class="grid-row">
             <div class="input-group">
                 <label>Customer / Company Name</label>
-                <input type="text" id="inpBuyerName" placeholder="Enter Customer Name" oninput="refreshInvoice()">
+                <input type="text" id="inpBuyerName" placeholder="வாடிக்கையாளர் பெயர் உள்ளிடவும்" oninput="refreshInvoice()">
             </div>
             <div class="input-group" style="grid-column: span 3;">
                 <label>Customer Address</label>
-                <input type="text" id="inpBuyerAddr" placeholder="Enter Customer Delivery Address" oninput="refreshInvoice()">
+                <input type="text" id="inpBuyerAddr" placeholder="வாடிக்கையாளர் முகவரி உள்ளிடவும்" oninput="refreshInvoice()">
             </div>
         </div>
 
         <!-- 3. Discount Setup -->
-        <div class="section-sub">3. Discount Details (Subtotal-nte thazhe varan)</div>
+        <div class="section-sub">3. Discount Details (Subtotal-க்கு கீழே தோன்றும்)</div>
         <div class="grid-row">
             <div class="input-group">
                 <label>Discount Type</label>
                 <select id="inpDiscType" onchange="renderInvoice()">
-                    <option value="none">No Discount</option>
+                    <option value="none">No Discount (தள்ளுபடி இல்லை)</option>
                     <option value="percent">Percentage (%)</option>
-                    <option value="amount">Direct Value (₹)</option>
+                    <option value="amount">Direct Amount (₹)</option>
                 </select>
             </div>
             <div class="input-group">
                 <label>Discount Value</label>
-                <input type="number" id="inpDiscVal" placeholder="Enter % or ₹ amount" step="any" oninput="renderInvoice()">
+                <input type="number" id="inpDiscVal" placeholder="சதவீதம் அல்லது ரூபாய் தொகையை உள்ளிடவும்" step="any" oninput="renderInvoice()">
             </div>
         </div>
 
         <!-- 4. Bank Account Details -->
-        <div class="section-sub">4. Bank Account Details (Enter cheythal mathram PDF-il varum)</div>
+        <div class="section-sub">4. Bank Account Details (உள்ளிடப்பட்டால் மட்டுமே PDF-ல் தோன்றும்)</div>
         <div class="grid-row">
             <div class="input-group">
                 <label>Company / Account Name</label>
@@ -270,7 +544,7 @@ Email: support@ibo.com | Web: www.ibo.com</textarea>
         </div>
     </div>
 
-    <!-- INVOICE SHEET (PDF AREA) -->
+    <!-- INVOICE SHEET (THIS AREA IS CONVERTED TO PDF) -->
     <div class="invoice-sheet" id="invoiceArea">
 
         <!-- Header Banner -->
@@ -321,85 +595,4 @@ Email: support@ibo.com | Web: www.ibo.com</div>
         <table class="items-tbl">
             <thead>
                 <tr>
-                    <th class="text-center" style="width: 4%;">#</th>
-                    <th class="text-center" style="width: 15%;">Offer ID</th>
-                    <th style="width: 48%;">Description of Goods</th>
-                    <th class="text-center" style="width: 7%;">Qty</th>
-                    <th class="text-right" style="width: 13%;">Price (₹)</th>
-                    <th class="text-right" style="width: 13%;">Total (₹)</th>
-                    <th class="text-center no-print" style="width: 4%;">Act</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-        </table>
-
-        <!-- Summary & Dynamic Bank Section -->
-        <table class="sum-tbl">
-            <tr>
-                <td class="bank-card" id="bankBox" style="display: none;">
-                    <div class="bank-card-title">BANK ACCOUNT DETAILS FOR PAYMENT</div>
-                    <div class="bank-item"><strong>Account Name:</strong> <span id="lblBankAccName">-</span></div>
-                    <div class="bank-item"><strong>Bank Name:</strong> <span id="lblBankName">-</span></div>
-                    <div class="bank-item"><strong>Account Number:</strong> <span id="lblBankAccNo">-</span></div>
-                    <div class="bank-item"><strong>IFSC Code:</strong> <span id="lblBankIFSC">-</span></div>
-                </td>
-                <td id="bankSpacer" style="width: 4%; display: none;"></td>
-                <td style="vertical-align: top;" id="totalsContainer">
-                    <table class="totals-tbl" id="totalsBody"></table>
-                </td>
-            </tr>
-        </table>
-
-        <!-- Terms -->
-        <div class="terms-card">
-            <div class="terms-title">TERMS & CONDITIONS</div>
-            <ol style="padding-left: 14px; line-height: 1.35;">
-                <li>This is a Proforma Invoice only, not a commercial tax invoice.</li>
-                <li>Prices mentioned are inclusive of all applicable taxes unless listed otherwise.</li>
-                <li>Goods will be dispatched only after full reflection of payment.</li>
-                <li>Validity of this proforma invoice is 3 days from date of issue.</li>
-            </ol>
-        </div>
-
-        <div class="footer-line">
-            EBO Mart Pvt Ltd | Proforma Invoice
-        </div>
-
-    </div>
-
-</div>
-
-<script>
-    let itemsList = [];
-
-    window.onload = function() {
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById("inpDate").value = today;
-        refreshInvoice();
-        renderInvoice();
-    };
-
-    function onStoreChange() {
-        const sel = document.getElementById("storeSelect").value;
-        const nameInput = document.getElementById("inpStoreName");
-        const addrInput = document.getElementById("inpStoreAddr");
-
-        if (sel === "saravanampatti") {
-            nameInput.value = "IBO - Saravanampatti, Coimbatore";
-            addrInput.value = "No. 46/6A1A NH 948, opp. Bus Stop, Saravanampatti,\nCoimbatore, Tamil Nadu - 641035\nEmail: support@ibo.com | Web: www.ibo.com";
-        } else if (sel === "omr") {
-            nameInput.value = "IBO - OMR Padur";
-            addrInput.value = "458/3, Rajiv Gandhi Salai, Next to Hindusthan College,\nPadur, Chennai, Tamil Nadu - 603103\nEmail: support@ibo.com | Web: www.ibo.com";
-        }
-        refreshInvoice();
-    }
-
-    // Sample Excel download with ONLY headers (no sample data)
-    function downloadSampleExcel() {
-        try {
-            const ws = XLSX.utils.aoa_to_sheet([["Offer ID", "Description", "Qty", "Price"]]);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Items");
-            XLSX.writeFile(wb, "Proforma_Invoice_Template.xlsx");
-        } catch (err) {
-        
+                    <th
