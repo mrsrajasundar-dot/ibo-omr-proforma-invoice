@@ -26,16 +26,19 @@
         .input-group { display: flex; flex-direction: column; }
         .input-group label { font-size: 7.8pt; font-weight: 700; color: #555; margin-bottom: 4px; text-transform: uppercase; }
         .input-group input, .input-group select, .input-group textarea {
-            padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 8.5pt; outline: none; transition: 0.2s;
+            padding: 7px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 8.5pt; outline: none; transition: 0.2s;
         }
         .input-group input:focus, .input-group select:focus, .input-group textarea:focus { border-color: #b71c1c; }
+
+        /* Compact store address textarea */
+        #inpStoreAddr { height: 46px; resize: vertical; font-size: 8pt; line-height: 1.3; }
 
         /* Excel Upload Section */
         .upload-section {
             background: #fff8f8;
             border: 2px dashed #ef9a9a;
             border-radius: 6px;
-            padding: 15px 20px;
+            padding: 14px 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -62,7 +65,7 @@
         .btn-print:hover { background: #8e0000; }
         .btn-danger { background: #c62828; color: white; padding: 3px 7px; font-size: 7.5pt; border-radius: 3px; }
 
-        .section-sub { font-size: 9pt; font-weight: 700; color: #b71c1c; margin: 10px 0 6px; text-transform: uppercase; border-bottom: 1px dashed #ef9a9a; padding-bottom: 3px; }
+        .section-sub { font-size: 8.8pt; font-weight: 700; color: #b71c1c; margin: 10px 0 6px; text-transform: uppercase; border-bottom: 1px dashed #ef9a9a; padding-bottom: 3px; }
 
         /* Invoice Sheet */
         .invoice-sheet {
@@ -74,74 +77,78 @@
 
         .header-tbl {
             width: 100%; border-collapse: collapse;
-            background: linear-gradient(135deg, #b71c1c 0%, #8e0000 100%);
-            color: white; border-radius: 4px; margin-bottom: 12px;
+            background: linear-gradient(135deg, #b71c1c 0%, #8e0000 100%) !important;
+            color: white !important; border-radius: 4px; margin-bottom: 12px;
         }
         .header-tbl td { padding: 12px 14px; vertical-align: top; }
-        .brand-name { font-size: 19pt; font-weight: 800; letter-spacing: 1px; }
-        .brand-sub { font-size: 9.5pt; font-weight: 700; color: #ffcdd2; margin: 2px 0 3px; }
-        .store-addr { font-size: 7.8pt; color: #ffebee; line-height: 1.35; white-space: pre-line; }
+        .brand-name { font-size: 19pt; font-weight: 800; letter-spacing: 1px; color: white !important; }
+        .brand-sub { font-size: 9.5pt; font-weight: 700; color: #ffcdd2 !important; margin: 2px 0 3px; }
+        .store-addr { font-size: 7.8pt; color: #ffebee !important; line-height: 1.35; white-space: pre-line; }
         
         .inv-badge {
-            background: #6d0000; font-size: 13pt; font-weight: 800; text-transform: uppercase;
+            background: #6d0000 !important; color: white !important; font-size: 13pt; font-weight: 800; text-transform: uppercase;
             padding: 3px 10px; border-radius: 3px; display: inline-block; margin-bottom: 6px;
         }
         .meta-tbl { margin-left: auto; font-size: 8pt; border-collapse: collapse; }
         .meta-tbl td { padding: 1px 4px; text-align: right; }
-        .meta-lbl { color: #ffcdd2; font-weight: 600; }
-        .meta-val { font-weight: 700; color: #ffffff; }
+        .meta-lbl { color: #ffcdd2 !important; font-weight: 600; }
+        .meta-val { font-weight: 700; color: #ffffff !important; }
 
         .address-tbl { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
         .addr-card {
-            width: 49%; border: 1px solid #e0e0e0; border-top: 3px solid #b71c1c;
-            border-radius: 3px; padding: 8px 10px; background: #fafafa; vertical-align: top; font-size: 7.8pt;
+            width: 49%; border: 1px solid #e0e0e0; border-top: 3px solid #b71c1c !important;
+            border-radius: 3px; padding: 8px 10px; background: #fafafa !important; vertical-align: top; font-size: 7.8pt;
         }
-        .addr-title { font-size: 8pt; font-weight: 800; color: #b71c1c; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid #eee; padding-bottom: 2px; }
+        .addr-title { font-size: 8pt; font-weight: 800; color: #b71c1c !important; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid #eee; padding-bottom: 2px; }
         .company-name { font-size: 8.6pt; font-weight: 700; color: #111; margin-bottom: 2px; }
 
+        /* Items Table */
         .items-tbl { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
         .items-tbl th {
-            background: #b71c1c; color: white; font-size: 7.6pt; font-weight: 700;
+            background: #b71c1c !important; color: white !important; font-size: 7.6pt; font-weight: 700;
             text-transform: uppercase; padding: 6px 5px; border: 1px solid #9a1010; text-align: left;
         }
         .items-tbl td { padding: 6px 5px; font-size: 7.5pt; border: 1px solid #e0e0e0; vertical-align: middle; }
-        .items-tbl tr:nth-child(even) { background: #fff9f9; }
+        .items-tbl tr:nth-child(even) { background: #fff9f9 !important; }
         .text-center { text-align: center; }
         .text-right { text-align: right; }
         .font-mono { font-family: monospace; font-size: 7.3pt; }
         .font-bold { font-weight: 700; }
-        .discount-highlight { color: #b71c1c; font-weight: 700; }
 
-        /* Summary & Bank Section */
+        /* Summary & Dynamic Bank Section */
         .sum-tbl { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
         .bank-card {
-            width: 52%; border: 1px solid #ffcdd2; background: #fff5f5; border-left: 4px solid #b71c1c;
+            width: 52%; border: 1px solid #ffcdd2; background: #fff5f5 !important; border-left: 4px solid #b71c1c !important;
             border-radius: 3px; padding: 8px 10px; font-size: 7.8pt; vertical-align: top;
         }
-        .bank-card-title { font-size: 8pt; font-weight: 800; color: #b71c1c; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid #ffe0e0; padding-bottom: 2px; }
+        .bank-card-title { font-size: 8pt; font-weight: 800; color: #b71c1c !important; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid #ffe0e0; padding-bottom: 2px; }
         .bank-item { margin-bottom: 2px; }
         .bank-item strong { color: #444; }
 
         .totals-tbl { width: 100%; border-collapse: collapse; border: 1px solid #d32f2f; border-radius: 3px; font-size: 8pt; }
         .totals-tbl td { padding: 5px 8px; }
-        .tot-sub { background: #fff5f5; border-bottom: 1px solid #ffe0e0; }
-        .tot-grand { background: #b71c1c; color: white !important; font-weight: 800; font-size: 9.5pt; }
+        .tot-sub { background: #fff5f5 !important; border-bottom: 1px solid #ffe0e0; }
+        .tot-grand { background: #b71c1c !important; color: white !important; font-weight: 800; font-size: 9.5pt; }
 
         .terms-card {
-            border: 1px dashed #e0e0e0; background: #fffcfc; padding: 8px 10px;
+            border: 1px dashed #e0e0e0; background: #fffcfc !important; padding: 8px 10px;
             border-radius: 3px; font-size: 7.2pt; color: #555;
         }
-        .terms-title { font-weight: 700; color: #b71c1c; margin-bottom: 2px; text-transform: uppercase; font-size: 7.5pt; }
+        .terms-title { font-weight: 700; color: #b71c1c !important; margin-bottom: 2px; text-transform: uppercase; font-size: 7.5pt; }
 
         .footer-line { margin-top: 12px; text-align: center; font-size: 7.5pt; color: #777; border-top: 1px solid #eee; padding-top: 6px; }
 
-        /* Print Settings for PDF Download */
+        /* PRINT SETTINGS - PRESERVES FULL RED THEME IN PDF */
         @media print {
-            body { background: white; padding: 0; }
-            .control-panel { display: none !important; }
-            .invoice-sheet { box-shadow: none; padding: 0; width: 100%; }
-            .no-print { display: none !important; }
-            @page { size: A4 portrait; margin: 10mm; }
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+            body { background: white !important; padding: 0 !important; }
+            .control-panel, .no-print { display: none !important; }
+            .invoice-sheet { box-shadow: none !important; padding: 0 !important; width: 100% !important; border: none !important; }
+            @page { size: A4 portrait; margin: 8mm 10mm; }
         }
     </style>
 </head>
@@ -157,7 +164,7 @@
         <div class="upload-section">
             <div class="upload-info">
                 <h4>Excel Data Upload</h4>
-                <p>மாதிரி Excel ஃபைலை டவுன்லோட் செய்து, அதில் விவரங்களை உள்ளிட்ட பின் அப்லோட் செய்யவும்.</p>
+                <p>Headline mathram ulla sample file download cheythu data enter cheythu upload cheyyuka.</p>
             </div>
             <div class="btn-group">
                 <button class="btn btn-template" onclick="downloadSampleExcel()">📥 Download Sample Excel</button>
@@ -169,28 +176,30 @@
             </div>
         </div>
 
+        <!-- 1. Store Details -->
         <div class="section-sub">1. Store Details</div>
         <div class="grid-row">
             <div class="input-group">
                 <label>Store Location</label>
                 <select id="storeSelect" onchange="onStoreChange()">
-                    <option value="omr" selected>IBO - OMR Padur</option>
-                    <option value="saravanampatti">IBO - Saravanampatti, Coimbatore</option>
+                    <option value="saravanampatti" selected>IBO - Saravanampatti, Coimbatore</option>
+                    <option value="omr">IBO - OMR Padur</option>
                     <option value="custom">Custom Store</option>
                 </select>
             </div>
             <div class="input-group">
                 <label>Store Title</label>
-                <input type="text" id="inpStoreName" value="IBO - OMR Padur" oninput="refreshInvoice()">
+                <input type="text" id="inpStoreName" value="IBO - Saravanampatti, Coimbatore" oninput="refreshInvoice()">
             </div>
             <div class="input-group" style="grid-column: span 2;">
                 <label>Store Address & Contact (Editable)</label>
-                <textarea id="inpStoreAddr" rows="2" oninput="refreshInvoice()">458/3, Rajiv Gandhi Salai, Next to Hindusthan College,
-Padur, Chennai, Tamil Nadu - 603103
+                <textarea id="inpStoreAddr" oninput="refreshInvoice()">No. 46/6A1A NH 948, opp. Bus Stop, Saravanampatti,
+Coimbatore, Tamil Nadu - 641035
 Email: support@ibo.com | Web: www.ibo.com</textarea>
             </div>
         </div>
 
+        <!-- 2. Invoice & Customer Information -->
         <div class="section-sub">2. Invoice & Customer Information</div>
         <div class="grid-row">
             <div class="input-group">
@@ -214,15 +223,33 @@ Email: support@ibo.com | Web: www.ibo.com</textarea>
         <div class="grid-row">
             <div class="input-group">
                 <label>Customer / Company Name</label>
-                <input type="text" id="inpBuyerName" placeholder="Enter Customer / Company Name" oninput="refreshInvoice()">
+                <input type="text" id="inpBuyerName" placeholder="Enter Customer Name" oninput="refreshInvoice()">
             </div>
             <div class="input-group" style="grid-column: span 3;">
                 <label>Customer Address</label>
-                <input type="text" id="inpBuyerAddr" placeholder="Enter Delivery Address" oninput="refreshInvoice()">
+                <input type="text" id="inpBuyerAddr" placeholder="Enter Customer Delivery Address" oninput="refreshInvoice()">
             </div>
         </div>
 
-        <div class="section-sub">3. Bank Account Details (உள்ளிடப்பட்டால் மட்டுமே PDF-ல் தோன்றும்)</div>
+        <!-- 3. Discount Setup -->
+        <div class="section-sub">3. Discount Details (Subtotal-nte thazhe varan)</div>
+        <div class="grid-row">
+            <div class="input-group">
+                <label>Discount Type</label>
+                <select id="inpDiscType" onchange="renderInvoice()">
+                    <option value="none">No Discount</option>
+                    <option value="percent">Percentage (%)</option>
+                    <option value="amount">Direct Value (₹)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Discount Value</label>
+                <input type="number" id="inpDiscVal" placeholder="Enter % or ₹ amount" step="any" oninput="renderInvoice()">
+            </div>
+        </div>
+
+        <!-- 4. Bank Account Details -->
+        <div class="section-sub">4. Bank Account Details (Enter cheythal mathram PDF-il varum)</div>
         <div class="grid-row">
             <div class="input-group">
                 <label>Company / Account Name</label>
@@ -243,17 +270,17 @@ Email: support@ibo.com | Web: www.ibo.com</textarea>
         </div>
     </div>
 
-    <!-- INVOICE SHEET FOR PDF -->
+    <!-- INVOICE SHEET (PDF AREA) -->
     <div class="invoice-sheet" id="invoiceArea">
 
-        <!-- Header -->
+        <!-- Header Banner -->
         <table class="header-tbl">
             <tr>
                 <td style="width: 60%;">
                     <div class="brand-name">IBO</div>
-                    <div class="brand-sub" id="lblStoreName">IBO - OMR Padur</div>
-                    <div class="store-addr" id="lblStoreAddr">458/3, Rajiv Gandhi Salai, Next to Hindusthan College,
-Padur, Chennai, Tamil Nadu - 603103
+                    <div class="brand-sub" id="lblStoreName">IBO - Saravanampatti, Coimbatore</div>
+                    <div class="store-addr" id="lblStoreAddr">No. 46/6A1A NH 948, opp. Bus Stop, Saravanampatti,
+Coimbatore, Tamil Nadu - 641035
 Email: support@ibo.com | Web: www.ibo.com</div>
                 </td>
                 <td style="width: 40%; text-align: right;">
@@ -292,7 +319,17 @@ Email: support@ibo.com | Web: www.ibo.com</div>
 
         <!-- Products Table -->
         <table class="items-tbl">
-            <thead id="tableHead"></thead>
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 4%;">#</th>
+                    <th class="text-center" style="width: 15%;">Offer ID</th>
+                    <th style="width: 48%;">Description of Goods</th>
+                    <th class="text-center" style="width: 7%;">Qty</th>
+                    <th class="text-right" style="width: 13%;">Price (₹)</th>
+                    <th class="text-right" style="width: 13%;">Total (₹)</th>
+                    <th class="text-center no-print" style="width: 4%;">Act</th>
+                </tr>
+            </thead>
             <tbody id="tableBody"></tbody>
         </table>
 
@@ -333,279 +370,36 @@ Email: support@ibo.com | Web: www.ibo.com</div>
 </div>
 
 <script>
-    // Initial Item State (Empty)
     let itemsList = [];
 
-    // Set today's date in Date Picker
     window.onload = function() {
         const today = new Date().toISOString().split('T')[0];
         document.getElementById("inpDate").value = today;
         refreshInvoice();
+        renderInvoice();
     };
 
-    // Store Location Dropdown Change
     function onStoreChange() {
         const sel = document.getElementById("storeSelect").value;
         const nameInput = document.getElementById("inpStoreName");
         const addrInput = document.getElementById("inpStoreAddr");
 
-        if (sel === "omr") {
-            nameInput.value = "IBO - OMR Padur";
-            addrInput.value = "458/3, Rajiv Gandhi Salai, Next to Hindusthan College,\nPadur, Chennai, Tamil Nadu - 603103\nEmail: support@ibo.com | Web: www.ibo.com";
-        } else if (sel === "saravanampatti") {
+        if (sel === "saravanampatti") {
             nameInput.value = "IBO - Saravanampatti, Coimbatore";
             addrInput.value = "No. 46/6A1A NH 948, opp. Bus Stop, Saravanampatti,\nCoimbatore, Tamil Nadu - 641035\nEmail: support@ibo.com | Web: www.ibo.com";
+        } else if (sel === "omr") {
+            nameInput.value = "IBO - OMR Padur";
+            addrInput.value = "458/3, Rajiv Gandhi Salai, Next to Hindusthan College,\nPadur, Chennai, Tamil Nadu - 603103\nEmail: support@ibo.com | Web: www.ibo.com";
         }
         refreshInvoice();
     }
 
-    // Direct Excel / CSV Sample Downloader (Never Fails)
+    // Sample Excel download with ONLY headers (no sample data)
     function downloadSampleExcel() {
-        const sampleRows = [
-            { "Offer ID": "1014828777", "Description": "Finolex 4 in. (110 mm) 6 Kg/cm² 6 m Agriculture Pipe", "Qty": 20, "Price": 1975, "Discount": 0 },
-            { "Offer ID": "1014828299", "Description": "Finolex 4 in. (110 mm) 6 Kg/cm² Coupler Agriculture Fitting", "Qty": 50, "Price": 95, "Discount": 0 },
-            { "Offer ID": "1000188867", "Description": "Dewalt D28730-IN 2300 W 355mm Chop Saw", "Qty": 1, "Price": 12499, "Discount": 374 }
-        ];
-
         try {
-            const ws = XLSX.utils.json_to_sheet(sampleRows);
+            const ws = XLSX.utils.aoa_to_sheet([["Offer ID", "Description", "Qty", "Price"]]);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Items");
             XLSX.writeFile(wb, "Proforma_Invoice_Template.xlsx");
         } catch (err) {
-            // Instant CSV Fallback
-            let csv = "Offer ID,Description,Qty,Price,Discount\r\n";
-            sampleRows.forEach(r => {
-                csv += `"${r['Offer ID']}","${r['Description']}",${r['Qty']},${r['Price']},${r['Discount']}\r\n`;
-            });
-            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.setAttribute("download", "Proforma_Invoice_Template.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    }
-
-    // Excel Upload Handler
-    function importExcel(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-            const data = new Uint8Array(evt.target.result);
-            const workbook = XLSX.read(data, { type: 'array' });
-            const sheet = workbook.Sheets[workbook.SheetNames[0]];
-            const jsonData = XLSX.utils.sheet_to_json(sheet);
-
-            if (jsonData.length === 0) {
-                alert("Excel கோப்பில் தகவல்கள் எதுவும் இல்லை!");
-                return;
-            }
-
-            itemsList = jsonData.map(row => {
-                return {
-                    offerId: row['Offer ID'] || row['OFFER ID'] || row['offer_id'] || '',
-                    desc: row['Description'] || row['DESCRIPTION'] || row['Description of Goods'] || '',
-                    qty: Number(row['Qty'] || row['QTY'] || row['Quantity'] || 1),
-                    price: Number(row['Price'] || row['PRICE'] || row['Unit Price'] || 0),
-                    discount: Number(row['Discount'] || row['DISCOUNT'] || 0)
-                };
-            });
-
-            renderInvoice();
-            alert("Excel தரவு வெற்றிகரமாக பதிவேற்றப்பட்டது! (" + itemsList.length + " பொருட்கள் சேர்க்கப்பட்டன)");
-        };
-        reader.readAsArrayBuffer(file);
-    }
-
-    // Render Invoice Table & Discount Logic
-    function renderInvoice() {
-        const thead = document.getElementById("tableHead");
-        const tbody = document.getElementById("tableBody");
-        const totalsBody = document.getElementById("totalsBody");
-
-        const hasDiscount = itemsList.some(item => item.discount > 0);
-
-        if (hasDiscount) {
-            thead.innerHTML = `
-                <tr>
-                    <th class="text-center" style="width: 4%;">#</th>
-                    <th class="text-center" style="width: 14%;">Offer ID</th>
-                    <th style="width: 42%;">Description of Goods</th>
-                    <th class="text-center" style="width: 6%;">Qty</th>
-                    <th class="text-right" style="width: 11%;">Price (₹)</th>
-                    <th class="text-right" style="width: 11%;">Discount (₹)</th>
-                    <th class="text-right" style="width: 12%;">Net Total (₹)</th>
-                    <th class="text-center no-print" style="width: 4%;">Act</th>
-                </tr>
-            `;
-        } else {
-            thead.innerHTML = `
-                <tr>
-                    <th class="text-center" style="width: 4%;">#</th>
-                    <th class="text-center" style="width: 15%;">Offer ID</th>
-                    <th style="width: 48%;">Description of Goods</th>
-                    <th class="text-center" style="width: 7%;">Qty</th>
-                    <th class="text-right" style="width: 13%;">Price (₹)</th>
-                    <th class="text-right" style="width: 13%;">Total (₹)</th>
-                    <th class="text-center no-print" style="width: 4%;">Act</th>
-                </tr>
-            `;
-        }
-
-        tbody.innerHTML = "";
-        let totQty = 0;
-        let totGross = 0;
-        let totDiscount = 0;
-        let totNet = 0;
-
-        itemsList.forEach((item, idx) => {
-            const lineGross = item.qty * item.price;
-            const lineDisc = item.qty * (item.discount || 0);
-            const lineNet = lineGross - lineDisc;
-
-            totQty += item.qty;
-            totGross += lineGross;
-            totDiscount += lineDisc;
-            totNet += lineNet;
-
-            const tr = document.createElement("tr");
-
-            if (hasDiscount) {
-                tr.innerHTML = `
-                    <td class="text-center font-bold">${idx + 1}</td>
-                    <td class="text-center font-mono">${item.offerId}</td>
-                    <td>${item.desc}</td>
-                    <td class="text-center font-bold">${item.qty}</td>
-                    <td class="text-right">₹${item.price.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-                    <td class="text-right discount-highlight">${item.discount > 0 ? '-₹' + (item.discount * item.qty).toLocaleString('en-IN', {minimumFractionDigits: 2}) : '-'}</td>
-                    <td class="text-right font-bold">₹${lineNet.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-                    <td class="text-center no-print">
-                        <button class="btn-danger" onclick="removeItem(${idx})">✕</button>
-                    </td>
-                `;
-            } else {
-                tr.innerHTML = `
-                    <td class="text-center font-bold">${idx + 1}</td>
-                    <td class="text-center font-mono">${item.offerId}</td>
-                    <td>${item.desc}</td>
-                    <td class="text-center font-bold">${item.qty}</td>
-                    <td class="text-right">₹${item.price.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-                    <td class="text-right font-bold">₹${lineGross.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-                    <td class="text-center no-print">
-                        <button class="btn-danger" onclick="removeItem(${idx})">✕</button>
-                    </td>
-                `;
-            }
-
-            tbody.appendChild(tr);
-        });
-
-        // Totals Box
-        if (hasDiscount) {
-            totalsBody.innerHTML = `
-                <tr class="tot-sub">
-                    <td><strong>Total Quantity:</strong></td>
-                    <td class="text-right font-bold">${totQty.toLocaleString('en-IN')} Units</td>
-                </tr>
-                <tr class="tot-sub">
-                    <td><strong>Subtotal (Gross):</strong></td>
-                    <td class="text-right font-bold">₹${totGross.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-                </tr>
-                <tr class="tot-sub">
-                    <td style="color: #b71c1c; font-weight: 700;"><strong>Discount Savings:</strong></td>
-                    <td class="text-right font-bold" style="color: #b71c1c;">-₹${totDiscount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-                </tr>
-                <tr class="tot-grand">
-                    <td>GRAND TOTAL:</td>
-                    <td class="text-right">₹${totNet.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-                </tr>
-            `;
-        } else {
-            totalsBody.innerHTML = `
-                <tr class="tot-sub">
-                    <td><strong>Total Quantity:</strong></td>
-                    <td class="text-right font-bold">${totQty.toLocaleString('en-IN')} Units</td>
-                </tr>
-                <tr class="tot-sub">
-                    <td><strong>Subtotal:</strong></td>
-                    <td class="text-right font-bold">₹${totGross.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-                </tr>
-                <tr class="tot-grand">
-                    <td>GRAND TOTAL:</td>
-                    <td class="text-right">₹${totGross.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-                </tr>
-            `;
-        }
-    }
-
-    function removeItem(index) {
-        itemsList.splice(index, 1);
-        renderInvoice();
-    }
-
-    // Refresh Preview & Toggle Bank Details
-    function refreshInvoice() {
-        document.getElementById("lblStoreName").innerText = document.getElementById("inpStoreName").value;
-        document.getElementById("lblStoreAddr").innerText = document.getElementById("inpStoreAddr").value;
         
-        document.getElementById("lblInvNo").innerText = document.getElementById("inpInvNo").value.trim() || "-";
-        
-        // Date formatting
-        const rawDate = document.getElementById("inpDate").value;
-        if (rawDate) {
-            const d = new Date(rawDate);
-            const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-            document.getElementById("lblDate").innerText = `${months[d.getMonth()]} ${String(d.getDate()).padStart(2, '0')}, ${d.getFullYear()}`;
-        } else {
-            document.getElementById("lblDate").innerText = "-";
-        }
-
-        document.getElementById("lblValidity").innerText = document.getElementById("inpValidity").value || "3 Days";
-
-        const buyer = document.getElementById("inpBuyerName").value.trim();
-        document.getElementById("lblBuyerName").innerText = buyer || "-";
-        document.getElementById("lblShipName").innerText = buyer || "-";
-
-        document.getElementById("lblBuyerAddr").innerText = document.getElementById("inpBuyerAddr").value.trim() || "-";
-        
-        const gst = document.getElementById("inpGST").value.trim();
-        document.getElementById("lblGST").innerText = gst || "-";
-        document.getElementById("gstContainer").style.display = gst ? "block" : "none";
-
-        // Bank Details Validation & Conditional Visibility
-        const bAccName = document.getElementById("inpBankAccName").value.trim();
-        const bName = document.getElementById("inpBankName").value.trim();
-        const bAccNo = document.getElementById("inpBankAccNo").value.trim();
-        const bIFSC = document.getElementById("inpBankIFSC").value.trim();
-
-        const bankBox = document.getElementById("bankBox");
-        const bankSpacer = document.getElementById("bankSpacer");
-        const totalsContainer = document.getElementById("totalsContainer");
-
-        if (bAccName || bName || bAccNo || bIFSC) {
-            bankBox.style.display = "table-cell";
-            bankSpacer.style.display = "table-cell";
-            totalsContainer.style.width = "44%";
-            
-            document.getElementById("lblBankAccName").innerText = bAccName || "-";
-            document.getElementById("lblBankName").innerText = bName || "-";
-            document.getElementById("lblBankAccNo").innerText = bAccNo || "-";
-            document.getElementById("lblBankIFSC").innerText = bIFSC || "-";
-        } else {
-            // Hide Bank Box completely if no entry
-            bankBox.style.display = "none";
-            bankSpacer.style.display = "none";
-            totalsContainer.style.width = "48%";
-            totalsContainer.style.marginLeft = "auto";
-        }
-    }
-
-    renderInvoice();
-</script>
-
-</body>
-</html>
